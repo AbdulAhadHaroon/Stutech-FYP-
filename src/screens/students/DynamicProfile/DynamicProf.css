@@ -20,7 +20,8 @@
 }
 
 .img1SDP{
-    width: 100px;
-    height: 140px;
+    width: 140px;
+    height: 180px;
     border: solid 1px rgb(47, 174, 212);
+    padding: 5px
 }

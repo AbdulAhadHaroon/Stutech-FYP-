@@ -29,6 +29,7 @@ import OrgAfterLogin from './screens/organization/orgAfterLogin/AfterLoginOrg.js
 import OrgAddJob from './screens/organization/orgAddJob/addJobO.js'
 import org_signup from './screens/signup/signuporg/org_signup.js';
 import OrgProfile from './screens/organization/orgProfile/profileO.js'
+import OrgViewAchievements from './screens/organization/orgViewAchieve/ViewAchievementsO.js'
 
 
 import TechAfterLogin from './screens/teacher/techAfterLogin/afterLoginT.js'
@@ -78,6 +79,7 @@ class App extends Component {
           <Route exact path="/orgAfterLogin" component={OrgAfterLogin}/>
           <Route exact path="/orgAddJob" component={OrgAddJob}/>
           <Route exact path="/orgProfile" component={OrgProfile}/>
+          <Route exact path="/orgViewAchievements" component={OrgViewAchievements}/>
 
           <Route exact path="/techAfterLogin" component={TechAfterLogin}/>
           <Route exact path="/techAddJob" component={TechAddJob}/>

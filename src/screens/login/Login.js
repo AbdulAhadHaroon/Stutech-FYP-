@@ -80,7 +80,19 @@ class Login extends Component {
            
            this.setState({progress:false})
            this.props.studentInfo(stuObj);
-           this.props.history.push("/stuAfterLogin");
+          
+             var obj = {
+               name : data.name ,
+               email : data.email ,
+               ph_no : data.ph_no ,
+               gender : data.gender ,
+               image : data.imgURL ,
+               batch : data.batch ,
+               department : data.department , 
+             }
+            firebase.database().ref(`Student/${data.rollNo}/StudentInfo`).update(obj);
+           
+            this.props.history.push("/stuAfterLogin");
 
 
         }

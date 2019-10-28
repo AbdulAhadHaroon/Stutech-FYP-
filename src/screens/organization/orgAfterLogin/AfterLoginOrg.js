@@ -109,7 +109,7 @@ class orgAfterLogin extends Component {
                 </Link>
                 
                 
-                <Link to='/techViewAchievements'>
+                <Link to='/orgViewAchievements'>
                 <div className="smbtn3OAF"> 
                  <p className="row">
                     <img className="smbtn_img_OAF" src={require('../../../images/award.png')} />

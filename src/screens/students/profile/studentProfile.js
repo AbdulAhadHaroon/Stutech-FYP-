@@ -83,7 +83,7 @@ class Studentprofile extends Component {
     document.getElementById('maindiv3').style.display='none'
     document.getElementById('maindiv4').style.display='none'
  
-    document.getElementById('email2').value = Email;
+    document.getElementById('email2').innerHTML = Email;
     document.getElementById('number2').value = Num;
     document.getElementById('dob2').value = Dob;    
   
@@ -98,7 +98,7 @@ class Studentprofile extends Component {
 
     var data = this.props.details;
 
-    firebase.database().ref(data.rollNo).on("value", (snapshot)=> {
+    firebase.database().ref(`Student/${data.rollNo}`).on("value", (snapshot)=> {
 
       if(snapshot.exists()){
 
@@ -127,7 +127,11 @@ class Studentprofile extends Component {
       document.getElementById('maindiv3').style.display='none'
       document.getElementById('maindiv4').style.display='block'
 
-      firebase.database().ref(data.rollNo).on("value", (snapshot)=> {
+      while(myskills.length > 0) {
+        myskills.splice(0,1); 
+       }
+
+      firebase.database().ref(`Student/${data.rollNo}`).on("value", (snapshot)=> {
 
         if(snapshot.exists()){
   
@@ -135,13 +139,13 @@ class Studentprofile extends Component {
           var p = snapshot.val().Skills.detail;
           var res = p.split(',');
           res.pop();
-          console.log(res)
-          // this.setState({myskills:res})
+          
           for(var i=0; i<res.length; i++ ){
             myskills.push(res[i]);
           }
           this.setState({})
         }
+      
      }  
   })
 } 
@@ -240,7 +244,7 @@ class Studentprofile extends Component {
     }
     else{
       var data = this.props.details;
-      firebase.database().ref("Users/"+data.id).update({number:add});
+      firebase.database().ref("Users/"+data.id).update({ph_no:add});
       Swal.fire('Done' ,'Number Updated Successfully')
     }
   }
@@ -317,10 +321,12 @@ class Studentprofile extends Component {
   else{
     var data = this.props.details;
     var database = firebase.database().ref();       
-    var skey =firebase.database().ref(`${data.rollNo}/aboutYourSelf`).set({detail : add});
+    var skey =firebase.database().ref(`Student/${data.rollNo}/aboutYourSelf`).set({detail : add});
     Swal.fire('Done' ,'Data Added Successfully ')
   }
  }
+
+
 
  addMatric3(){
   var add = document.getElementById('matric3').value;
@@ -330,7 +336,7 @@ class Studentprofile extends Component {
   else{
     var data = this.props.details;
     var database = firebase.database().ref();       
-    var skey =firebase.database().ref(`${data.rollNo}/Matric`).set({detail : add});
+    var skey =firebase.database().ref(`Student/${data.rollNo}/Matric`).set({detail : add});
     Swal.fire('Done' ,'Data Added Successfully ')
   }
  }
@@ -343,8 +349,7 @@ class Studentprofile extends Component {
   else{
     var data = this.props.details;
     var database = firebase.database().ref();       
-    var skey =firebase.database().ref(`${data.rollNo}/Inter`).set({detail : add});
-    
+    var skey =firebase.database().ref(`Student/${data.rollNo}/Inter`).set({detail : add});
     Swal.fire('Done' ,'Data Added Successfully ')
   }
  }
@@ -362,8 +367,12 @@ class Studentprofile extends Component {
     }
     var data = this.props.details;
     var database = firebase.database().ref();       
-    var skey =firebase.database().ref(`${data.rollNo}/Skills`).set({detail : mydata});
+    var skey =firebase.database().ref(`Student/${data.rollNo}/Skills`).set({detail : mydata});
     Swal.fire('Done' ,'Data Added Successfully ')
+    while(myskills.length > 0) {
+      myskills.splice(0,1); 
+     }
+ 
    }
   }
 
@@ -538,8 +547,8 @@ class Studentprofile extends Component {
                       <div className="input-group-prepend">
                         <div className="input-group-text" style={{width:'40px'}}>@</div>
                       </div>
-                      <input style={{fontSize:'12px'}} type="text" className="form-control" id="email2" placeholder="Email"/>
-                      <Button text='Update'  type='submit' onClick={()=>{this.updateEmail2()}}/>
+                      <p style={{fontSize:'12px'}} className="form-control" id="email2" ></p>
+                      {/* <Button text='Update'  type='submit' onClick={()=>{this.updateEmail2()}}/> */}
                     </div>
                 </div>
             </div>
@@ -713,13 +722,14 @@ class Studentprofile extends Component {
               <Button text='Add to Profile'  type='submit' onClick={()=>this.addSkill4()}/>
               </p>
              
-              { this.state.myskills.length &&
+              { 
                 this.state.myskills.map((skill , index)=>{
+                  console.log(this.state.myskills.length)
                   return(
                     <div  className="col-md-12" key={index}>
                       <p style={{fontSize:'12px' , color:'rgb(20, 194, 224)' , display:'inline-block'}}>{skill}</p>
                        &nbsp;
-                      <img src={require('../../../images/del.png')} style={{width:'25px' , height:'25px'}} onClick={(e)=>{this.removeSkills(e)}}/>
+                      <img src={require('../../../images/del.png')} style={{width:'25px' , height:'25px'}} onClick={(e)=>{this.removeSkills(index)}}/>
                     </div>
                      
                   )

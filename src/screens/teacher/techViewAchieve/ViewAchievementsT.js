@@ -6,6 +6,10 @@ import {Link} from 'react-router-dom';
 import Swal from 'sweetalert2'
 import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap';
 import Modal from 'react-responsive-modal';
+import firebase from '../../../config/firebase.js'
+import '../../Loader/loader.css'
+
+
 
 import {Button} from '../../../components/button/button.js'
 
@@ -20,12 +24,16 @@ class ViewAchievementsT extends Component {
     }
   }
 
+componentDidMount(){
+  this.addData();
+}
   addData(){
       const{myNotifications}=this.state;
+      console.log('aaaa')
       myNotifications.push({ id:'awexgbt' ,logo:require('../../../images/ssuet.png') , orgName:'SSUET' , depart:'SE' ,  subject:'Seminar on AI' , date:'12-4-2018' })
       myNotifications.push({ id:'1we4hji' ,logo:require('../../../images/oracle.png')  , orgName:'App Bakers' , depart:'CE'  , subject:'Job Available for full stack Developer' , date:'12-4-2018' })
       myNotifications.push({ id:'dfmk30f' ,logo:require('../../../images/decima.png')  , orgName:'Decima.AI' , depart:'SE'  ,  subject:'Internships Available for full Software Engineer' , date:'12-7-2018'  })
-  
+      this.setState({myNotifications})
     }
 
     onOpenModal = () => {
@@ -40,11 +48,10 @@ class ViewAchievementsT extends Component {
 
   render(){
       const {myNotifications , open} = this.state;
-      this.addData();
       return(
           <div>
 
-<Modal open={open} onClose={this.onCloseModal} center>
+          <Modal open={open} onClose={this.onCloseModal} center>
           <div  style={{borderRadius:'10px' , padding:'20px'}}>
           <h6 style={{color:'rgb(20, 194, 224)' , textAlign:'center'}} > <b> Filters </b> </h6>
           <hr/>

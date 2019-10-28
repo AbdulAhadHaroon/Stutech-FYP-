@@ -6,6 +6,9 @@ import {Link} from 'react-router-dom';
 import Swal from 'sweetalert2'
 import {Button} from '../../../components/button/button.js'
 import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap';
+import studentProfile from '../profile/studentProfile';
+import { connect } from 'react-redux';
+import firebase from '../../../config/firebase.js'
 
 class StuDynamicProfile extends Component {
   
@@ -13,23 +16,77 @@ class StuDynamicProfile extends Component {
     super();
 
     this.state = {
-        skills:[] ,
-        achievements:[],
-        dataIndex : null
-
+       yourself : 'No data found' ,
+       matric : 'No data found' ,
+       inter : 'No data found' ,
+       skills : 'No data found' ,
+       name : '' ,
+       phno : '' ,
+       image : '' ,
+       gender : '' ,
+       email : '' ,
+       department : '' ,
+       batch : '' , 
+       achievements:[]
+    
     }
   }
 
-  addData(){
-      const{skills , achievements}=this.state;
-       skills.push({ id:'awexgbt' , skill:'Java'})
-       skills.push({ id:'awexgbt' , skill:'Java script'})
-       skills.push({ id:'awexgbt' , skill:'React.js'})   
+  componentDidMount(){
+      this.addData();
+  }
 
-       achievements.push({id:'1' , achieve:'complete android course'})
-       achievements.push({id:'1' , achieve:'complete python course'})
-       achievements.push({id:'1' , achieve:'complete react course'})
-    }
+  addData(){
+    const {  yourself  , matric  , inter , skills  , name  , phno  , image  , gender  , email  , department , batch , achievements} = this.state;  
+    var data = this.props.details;
+
+    firebase.database().ref(`Student/${data.rollNo}`).on("value", (snapshot)=> {
+
+      if(snapshot.exists()){
+       console.log('sasa')   
+
+      if(snapshot.hasChild("aboutYourSelf")){
+        this.setState({  yourself : snapshot.val().aboutYourSelf.detail })
+      }
+
+      if(snapshot.hasChild("Matric")){
+        this.setState({  matric : snapshot.val().Matric.detail })
+      }
+
+      if(snapshot.hasChild("Inter")){
+        this.setState({  inter : snapshot.val().Inter.detail })   
+      }
+
+      if(snapshot.hasChild("Skills")){
+        this.setState({  skills : snapshot.val().Skills.detail })    
+      }
+
+      if(snapshot.hasChild("StudentInfo")){
+     this.setState({ batch : snapshot.val().StudentInfo.batch }) 
+     this.setState({ department : snapshot.val().StudentInfo.department}) 
+     this.setState({ email :snapshot.val().StudentInfo.email}) 
+     this.setState({ gender :snapshot.val().StudentInfo.gender})
+     this.setState({ image :snapshot.val().StudentInfo.image})  
+     this.setState({ name : snapshot.val().StudentInfo.name}) 
+     this.setState({ phno : snapshot.val().StudentInfo.ph_no})     
+      }
+
+      if(snapshot.hasChild("Achievements")){
+        while(achievements.length > 0) {
+              achievements.splice(0,1); 
+           }
+        firebase.database().ref(`Student/${data.rollNo}/Achievements`).on("value", (snapshot)=> {
+            snapshot.forEach((childSnapshot)=> {
+               achievements.push({detail : childSnapshot.val().subject})
+               this.setState({achievements})
+            })
+        })
+      }
+
+       this.setState({})
+      }
+    })
+   }
 
 
   showFullData(e){
@@ -40,8 +97,8 @@ class StuDynamicProfile extends Component {
 
 
   render(){
-      const {skills , achievements} = this.state;
-      this.addData();
+    const { yourself  , matric  , inter , skills  , name  , phno  , image  , gender  , email  , department , batch , achievements} = this.state;
+   
       return(
           <div>
             
@@ -50,31 +107,35 @@ class StuDynamicProfile extends Component {
                     <img  onClick={()=>this.props.history.goBack()} style={{width:'30px' , height:'30px' }}  src={require('../../../images/back.png')} />
                     <img style={{height:'70px' , width:'110px' ,marginTop:'10px' , padding:'5px' }} src={require('../../../images/logo.png')}/> 
                 </Navbar.Brand>
-          </Navbar>
-
-             
+          </Navbar>   
              <div className="col-sm-8 div1SDP">
-                <p style={{textAlign:'center' , margin:'20px'}}> <img  className="img1SDP" /> </p>
+                <p style={{textAlign:'center' , margin:'20px'}}> <img  className="img1SDP"  src={image}/> </p>
+                 <h6> <b style={{color:'rgb(47, 174, 212)'}}>About Student</b> </h6>
+                    <p style={{fontSize:'14px' , marginLeft:'10%'}}>
+                      <b> Name : </b> {name} <br/>
+                      <b> Email : </b> {email} <br/>
+                      <b> Phone : </b> {phno} <br/>
+                      <b> Gender : </b> {gender} <br/>
+                      <b> Batch : </b> {batch} <br/>
+                      <b> Department : </b> {department} <br/>
+                    </p>
                    
                     <br/>
                     <h6> <b style={{color:'rgb(47, 174, 212)'}}> Academic Information</b> </h6>
                     <p style={{fontSize:'14px'}} >
-                        <b style={{fontSize:'14px' , marginLeft:'10%'}}>Matirculation&nbsp;&nbsp;&nbsp;:</b>{}<br/>
-                        <b style={{fontSize:'14px' , marginLeft:'10%'}}>Intermediate&nbsp;&nbsp;&nbsp;&nbsp;:</b>{}<br/>
+                        <b style={{fontSize:'14px' , marginLeft:'10%'}}>Matirculation&nbsp;&nbsp;&nbsp;:</b>{matric}<br/>
+                        <b style={{fontSize:'14px' , marginLeft:'10%'}}>Intermediate&nbsp;&nbsp;&nbsp;&nbsp;:</b>{inter}<br/>
                     </p>
 
                     <br/>
 
                     <h6> <b style={{color:'rgb(47, 174, 212)'}}>Skills</b> </h6>
-                    <p style={{marginLeft:'10%' , fontSize:'14px'}}>
-                    {
-                    skills.map((val , index ) => {
-                       return(
-                         <b style={{fontSize:'14px'}}> { val.skill } , </b>
-                       )
-                    })
-                    }                       
-                    </p>
+                    <p style={{marginLeft:'10%' , fontSize:'14px'}}>{skills}</p>
+                    
+                    <br/>
+
+                    <h6> <b style={{color:'rgb(47, 174, 212)'}}>About</b> </h6>
+                    <p style={{marginLeft:'10%' , fontSize:'14px'}}>{yourself}</p>
                     
                     <br/>
                     
@@ -85,7 +146,7 @@ class StuDynamicProfile extends Component {
                        return(
                          <ul style={{marginLeft:'10%'}}>
                             <li>   
-                            <b style={{fontSize:'14px'}}>{ val.achieve }</b>
+                            <b style={{fontSize:'14px'}}>{ val.detail }</b>
                             </li>
                          </ul>
                        )
@@ -94,13 +155,13 @@ class StuDynamicProfile extends Component {
                     </p>
 
                     <br/>
-                    <h6> <b style={{color:'rgb(47, 174, 212)'}}>About Student</b> </h6>
-                    <p>
-                        <br/>
-                        <b style={{fontSize:'14px' , marginLeft:'10%'}}> Updated soon </b>
-                    </p>
+                   
 
-                  <p style={{textAlign:'center'}}>  <Button text="Chat"/> </p>
+                  <p style={{textAlign:'center'}}>  
+                  <Button text="Chat"/>
+                  <Button text="Message"/>
+                  <Button text="Email"/> 
+                  </p>
 
              </div>
 
@@ -111,4 +172,17 @@ class StuDynamicProfile extends Component {
        )}
     }
 
-export default StuDynamicProfile;
+    function mapStateToProp(state) {
+        return ({
+          details: state.root.dynamicInfo ,
+          accounttype : state.root.accountType
+        })
+      }
+      function mapDispatchToProp(dispatch) {
+        return ({
+            //  getUserinfo : (info)=>{ dispatch(SignupDetail(info))}
+        })
+      }
+      
+      export default connect(mapStateToProp, mapDispatchToProp)(StuDynamicProfile);
+      

@@ -3,8 +3,11 @@ import '../../../css/bootstrap.min.css';
 import './addJobO.css';
 import '../../../css/scrollbar.css';
 import {Link} from 'react-router-dom';
+import { connect } from 'react-redux';
 import Swal from 'sweetalert2'
+import firebase from '../../../config/firebase.js'
 import {Button} from '../../../components/button/button.js'
+import '../../Loader/loader.css'
 
 import { Navbar} from 'react-bootstrap';
 
@@ -14,29 +17,154 @@ class orgAddJob extends Component {
   constructor() {
     super();
     this.state = {
-        myAchievements:[] ,
-        dataIndex : null
+        myPost:[] ,
+        dataIndex : null ,
+        progress : false ,
+        progress1 : true ,
+        jobType : 'none' ,
+        workType : 'none' ,
+        category : 'none'
     }
   }
 
-  addData(){
-      const{myAchievements}=this.state;
-      myAchievements.push({ id:'awexgbt' ,logo:require('../../../images/c1.jpg') , orgName:'Saylani'  ,cerDetails:'Completing 1 year Web and Mobile Application Development Course' , gettingSkills:'React.JS , ReactNative , Node.js e.t.c' , CompletionDate:'12-5-19' , orgLink:'www.saylani.com' , about:'Allhamdulillah ! Completing an other Certification'}) 
-      myAchievements.push({ id:'1we4hji' ,logo:require('../../../images/c2.jpg')  , orgName:'AppTech' ,cerDetails:'Completing 3 year Diploma of Mobile Application Development Course' , gettingSkills:'Android Development , firebase e.t.c' , CompletionDate:'12-5-19' , orgLink:'www.Aptech.com' , about:'Allhamdulillah ! Completing an other Certification'}) 
-      myAchievements.push({ id:'dfmk30f' ,logo:require('../../../images/c3.jpg')  , orgName:'SSUET' ,cerDetails:'Winning Speed test programming' , gettingSkills:'Speed Testing , programming , Debugging e.t.c' , CompletionDate:'12-5-19' , orgLink:'www.ssuet.com' , about:'Allhamdulillah ! Completing an other Certification'})
-    }
+ componentDidMount(){
+   this.addData();
+ }
+
+ addData(){
+  const{myAchievements , progress , myPost}=this.state;
+
+  var data = this.props.details;
+
+firebase.database().ref("Jobs").orderByChild("cemail").equalTo(""+data.email).on("value", (snapshot)=> {
+  if(snapshot.exists()){
+    this.setState({progress1:false})
+    snapshot.forEach((childSnapshot) => {
+    var rdata = childSnapshot.val();
+     var obj = {
+      id : rdata.id ,
+      image : rdata.image ,
+      subject : rdata.subject ,
+      detail : rdata.detail ,
+      category : rdata.category ,
+      date : rdata.date ,
+      type : rdata.jobType ,
+      workexperience : rdata.workType ,
+     }
+    myPost.push(obj);
+    this.setState({myPost})
+  })
+}else{
+  this.setState({progress1:false})
+}
+ })
+
+}
+
+showFullData(e){
+const {dataIndex}  = this.state; 
+document.getElementById('adata').innerHTML = null
+this.setState({dataIndex:e})
+}  
+
+shareAchieve(){
+
+const { special ,type  , progress , category , workType , jobType , myPost } = this.state;
+
+var a1 = document.getElementById('subject').value;
+var b1 = document.getElementById('detail').value;
+var c1 = document.getElementById('date').value;
+var file = document.getElementById('file').files[0];
 
 
-  showFullData(e){
-    const {dataIndex}  = this.state; 
-   document.getElementById('adata').innerHTML = null
-    this.setState({dataIndex:e})
-  }  
+if(a1.length<1){
+  Swal.fire('Oops' , 'Please Fill Out Subject Field Correctly' , 'error')
+}
+else if(b1.length<10){
+  Swal.fire('Oops' , 'Please Write Description Correctly' , 'error')
+}
+else if(c1.length<1){
+  Swal.fire('Oops' , 'Please Write Last Date' , 'error')
+}
+else if(workType.includes('none')){
+  Swal.fire('Oops' , 'Please Select Work Type' , 'error')
+}
+else if(category.includes('none')){
+  Swal.fire('Oops' , 'Please Select Category' , 'error')
+}
+else if(jobType.includes('none')){
+  Swal.fire('Oops' , 'Please Select Job Type Correctly' , 'error')
+}
+else if (file==undefined){
+  Swal.fire('Oops' , 'Please Select Your Image' , 'error')
+}
+else{
 
+    this.setState({progress:true})
+  
+    while(myPost.length > 0) {
+      myPost.splice(0,1); 
+     }
+ 
+  
+    var storageref = firebase.storage().ref("storage");
+        var uploadtask= storageref.child(''+(new Date()).getTime()+file.name).put(file).then((snapshot)=>{
+        return snapshot.ref.getDownloadURL();
+        }).then(downloadURL => {
+        var data = this.props.details;
+         
+        var database = firebase.database().ref();
+        
+          var skey =firebase.database().ref('Jobs').push();
+        
+          var jobObj = {
+            cid : data.id ,
+            clogo : data.imgURL ,
+            cemail : data.email ,
+            id : skey.key,
+            subject : a1 ,
+            detail : b1 ,
+            date : c1 ,
+            image :  downloadURL ,
+            workType : workType ,
+            jobType : jobType ,
+            category : category
+          }
+          skey.set(jobObj); 
+          this.setState({progress:false})
+          Swal.fire('Congratulation', 'Your Job Post  Added Successfully')
+    }) 
+}
+}
+
+delete(id){
+
+// Swal.fire('Done', 'Data Deleted Successfully')
+
+Swal.fire({
+  title: 'Are you sure?',
+  text: "You won't be able to revert this!",
+  type: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#d33',
+  cancelButtonColor: '#3085d6',
+  confirmButtonText: 'Yes, delete it!'
+}).then((result) => {
+  if (result.value) {
+    firebase.database().ref(`Jobs/${id}`).set({});
+    Swal.fire(
+      'Deleted!',
+      'Your data has been deleted.',
+      'success'
+    )
+  }
+})
+
+
+}
 
   render(){
-      const {myAchievements , dataIndex} = this.state;
-      this.addData();
+      const {myPost , dataIndex , progress , progress1 , jobType , workType , category} = this.state;
       return(
           <div className="mainDivOAJ">
 
@@ -52,22 +180,28 @@ class orgAddJob extends Component {
               <div id="sdata" className="col-lg scrollbar square scrollbar-lady-lips thin" style={{ height:'750px' , overflowY:'scroll' , textAlign:'center' , margin:'20px'}}> 
               <h6 className="pagination-centered" style={{color:'rgb(20, 194, 224)'}}> Previous Jobs Post </h6>
                 <hr/>
-              {
-                  
-                  myAchievements.map((val , ind)=>{
+                {myPost.length<1 && <h5> No Data Found </h5>}
+                
+                {progress1 && <div class='loaddiv'>
+                    <div class="loader"></div>
+                    <p><b>Loading please wait</b></p>
+                  </div> }
+
+                 {                  
+                  myPost.map((val , ind)=>{
                         return(
                            <div  className="viewDivOAJ">
-                              <p style={{textAlign:'center'}}> <img style={{width:'120px' , height:'80px'}} src={val.logo}/> </p>
+                              <p style={{textAlign:'center'}}> <img style={{width:'120px' , height:'80px'}} src={val.image}/> </p>
                               <hr/>
                               <p className="scrollbar square scrollbar-lady-lips thin"  style={{width:'400px' , fontSize:'12px' , overflowY:'scroll'}} > 
-                              <b> Subject : </b>  {val.orgName} <br/>
-                              <b> Date : </b> {val.orgLink} <br/>  
-                              <b> Details : </b> {val.cerDetails} <br/> 
-                              <b> Type: </b> abc <br/>
-                              <b> Category: </b> abc <br/>
-                              <b> Work Experienced </b> abc <br/>
+                              <b> Subject : </b>  {val.subject} <br/>
+                              <b> Details : </b> {val.detail} <br/> 
+                              <b> Category : </b> {val.category} <br/> 
+                              <b> Date : </b> {val.date} <br/>  
+                              <b> Type: </b> {val.type} <br/>
+                              <b> Experienced </b> {val.workexperience} <br/>
                               </p>
-                              <div align="right"> <Button text='Delete'  type='submit' /> </div>
+                              <div align="right"> <Button text='Delete'  type='submit' onClick={(e)=>this.delete(val.id)} /> </div>
                            </div>
                        )
                     })
@@ -82,69 +216,75 @@ class orgAddJob extends Component {
 
                 <div>
                <label  style={{display:'block' , textAlign:'left' , fontSize:'14px'}}><b style={{color:'rgb(20, 194, 224)'}}>Subject </b></label>
-               <input className="col-md-12 form-control"></input>
+               <input className="col-md-12 form-control" id="subject"></input>
                <br/>
                </div>
 
                <div>
                <label  style={{display:'block' , textAlign:'left' , fontSize:'14px'}}><b style={{color:'rgb(20, 194, 224)'}}>Details</b></label>
-               <textarea className="col-md-12 form-control"></textarea>
+               <textarea className="col-md-12 form-control" id='detail'></textarea>
                <br/>
                </div>
 
                <div>
                <label  style={{display:'block' , textAlign:'left' , fontSize:'14px'}}><b style={{color:'rgb(20, 194, 224)'}}>Last Date</b></label>
-               <input type='Date' className="col-md-12 form-control"></input>
+               <input type='Date' className="col-md-12 form-control" id='date'></input>
                <br/>
                </div>
 
                    <div className="form-group mx-1">
                             <label  style={{fontSize:'14px' , textAlign:'left' , display:'block'}} ><b style={{color:'rgb(20, 194, 224)'}}>Type</b></label>
-                            <select style={{fontSize:'14px'}} className="form-control" onChange={this.selectedAccountType} >
-                              <option value="student">Job</option>
-                              <option value="teacher">Internship</option>
-                              <option value="teacher">Seminar</option>
-                              <option value="teacher">Scholarship</option>
-                              <option value="teacher">Other</option>
+                            <select style={{fontSize:'14px'}} className="form-control" onChange={(e)=>this.setState({jobType : e.target.value})} >
+                              <option value="Job">Job</option>
+                              <option value="Internship">Internship</option>
+                              <option value="Seminar">Seminar</option>
+                              <option value="Scholarship">Scholarship</option>
+                              <option value="Other">Other</option>
                             </select>
                        </div>
 
 
                        <div className="form-group mx-1">
                             <label  style={{fontSize:'14px' , textAlign:'left' , display:'block'}} ><b style={{color:'rgb(20, 194, 224)'}}>Work Experienced</b></label>
-                            <select style={{fontSize:'14px'}} className="form-control" onChange={this.selectedAccountType} >
-                              <option value="student">Beginner</option>
-                              <option value="teacher">Intermediate</option>
+                            <select style={{fontSize:'14px'}} className="form-control" onChange={(e)=>this.setState({workType : e.target.value})} >
+                              <option value="Fresh">Fresh</option>
+                              <option value="3 to 6 months">3 to 6 months</option>
+                              <option value="6 to 12 months">6 to 12 months</option>
                             </select>
                         </div>
 
                         <div className="form-group mx-1">
                             <label  style={{fontSize:'14px' , textAlign:'left' , display:'block'}} ><b style={{color:'rgb(20, 194, 224)'}}>Category</b></label>
-                            <select style={{fontSize:'14px'}} className="form-control" onChange={this.selectedAccountType} >
-                              <option value="student">Web , Mobile and Software developer</option>
-                               <option value="teacher">Ecommerce Development</option>
-                               <option value="teacher">Game Development</option>
-                               <option value="teacher">Android App Development</option>
-                               <option value="teacher">QA and Testing</option>
-                               <option value="teacher">Database</option>
-                               <option value="teacher">Web Development</option>
-                               <option value="teacher">Web Designing</option>
-                               <option value="teacher">IOS Development</option>
-                               <option value="teacher">All IT and Networking</option>
-                               <option value="teacher">Other Development</option>
+                            <select style={{fontSize:'14px'}} className="form-control" onChange={(e)=>this.setState({category : e.target.value})} >
+                            <option value="Web , Mobile and Software developer">Web , Mobile and Software developer</option>
+                            <option value="Ecommerce Development">Ecommerce Development</option>
+                            <option value="Game Development">Game Development</option>
+                            <option value="Android App Development">Android App Development</option>
+                            <option value="QA and Testing">QA and Testing</option>
+                            <option value="Database Specialist">Database Specialist</option>
+                            <option value="Web Development">Web Development</option>
+                            <option value="Web Designing">Web Designing</option>
+                            <option value="IOS Development">IOS Development</option>
+                            <option value="All IT and Networking">All IT and Networking</option>
+                            <option value="Other">Other</option>
                             </select>
                         </div>
 
 
                <div>
                <label  style={{display:'block' , textAlign:'left' , fontSize:'14px'}}><b style={{color:'rgb(20, 194, 224)'}}>Attachment</b></label>
-               <input type="file" className="col-md-12 form-control"/>
+               <input type="file" id='file' className="col-md-12 form-control"/>
                <br/>
                </div>
 
                <br/>
+               {progress && <div class='loaddiv'>
+                    <div class="loader"></div>
+                    <p><b>Loading please wait</b></p>
+                  </div> }
 
-               <div align="center"><Button text='Submit'  type='submit'/> </div>
+
+            {!progress && <div align="center"><Button text='Submit'  type='submit' onClick={()=>this.shareAchieve()}/> </div> }
 
             </div>
 
@@ -154,4 +294,16 @@ class orgAddJob extends Component {
   )}
 }
 
-export default orgAddJob;
+function mapStateToProp(state) {
+  return ({
+    details: state.root.organizationInfo ,
+    accounttype : state.root.accountType
+  })
+}
+function mapDispatchToProp(dispatch) {
+  return ({
+   
+  })
+}
+
+export default connect(mapStateToProp, mapDispatchToProp)(orgAddJob);

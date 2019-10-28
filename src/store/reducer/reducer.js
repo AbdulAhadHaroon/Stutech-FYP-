@@ -6,11 +6,17 @@ const INITIAL_STATE = {
     teacherInfo:{} ,
     organizationInfo:{},
     adminInfo:{},
+    dynamicInfo:{}
 }
 
 // Use Case To Check the triggered Function of Action.js and set the triggered function value init respective obeject or variable  
 export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
+        case 'DYNAMICDATA':
+            return ({
+                ...state,
+                 dynamicInfo : action.payload
+                })
         case 'USERINFO':
             return ({
                 ...state,

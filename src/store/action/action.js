@@ -1,8 +1,13 @@
 // Exported Function Which are import into mapDispatchToProp with differ name in differ class. They get values in
 // function parameter from different class and pass it into reducer.js class where it can be checked in switch case
 //and assign values to respective object and variable and stored values in store . The store values will get using
-// mapStateToProp function   
+// mapStateToProp function 
 
+export function DynamicData(dinfo) {
+    return dispatch => {
+        dispatch({ type: 'DYNAMICDATA', payload: dinfo  })
+    }
+}
 
 export function SignupDetail(cinfo) {
     return dispatch => {

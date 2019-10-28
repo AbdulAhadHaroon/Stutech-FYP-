@@ -5,7 +5,6 @@ import '../../../css/scrollbar.css';
 import {Link} from 'react-router-dom';
 import { connect } from 'react-redux';
 import Swal from 'sweetalert2'
-import {SignupDetail} from '../../../store/action/action';
 import firebase from '../../../config/firebase.js'
 import {Button} from '../../../components/button/button.js'
 import '../../Loader/loader.css'
@@ -22,8 +21,13 @@ class studentShareAchivement extends Component {
         dataIndex : null ,
         special : 'all' ,
         type : 'all' ,
-        progress : false
+        progress : false ,
+        progress1 : true
     }
+  }
+
+  componentDidMount(){
+    this.addData()
   }
 
    selectSpecial = (event) => { 
@@ -38,12 +42,36 @@ class studentShareAchivement extends Component {
   
 
   addData(){
-      const{myAchievements}=this.state;
-      myAchievements.push({ id:'awexgbt' ,logo:require('../../../images/c1.jpg') , orgName:'Saylani'  ,cerDetails:'Completing 1 year Web and Mobile Application Development Course' , gettingSkills:'React.JS , ReactNative , Node.js e.t.c' , CompletionDate:'12-5-19' , orgLink:'www.saylani.com' , about:'Allhamdulillah ! Completing an other Certification'}) 
-      myAchievements.push({ id:'1we4hji' ,logo:require('../../../images/c2.jpg')  , orgName:'AppTech' ,cerDetails:'Completing 3 year Diploma of Mobile Application Development Course' , gettingSkills:'Android Development , firebase e.t.c' , CompletionDate:'12-5-19' , orgLink:'www.Aptech.com' , about:'Allhamdulillah ! Completing an other Certification'}) 
-      myAchievements.push({ id:'dfmk30f' ,logo:require('../../../images/c3.jpg')  , orgName:'SSUET' ,cerDetails:'Winning Speed test programming' , gettingSkills:'Speed Testing , programming , Debugging e.t.c' , CompletionDate:'12-5-19' , orgLink:'www.ssuet.com' , about:'Allhamdulillah ! Completing an other Certification'})
-    }
+      const{myAchievements , progress}=this.state;
 
+      var data = this.props.details;
+
+    firebase.database().ref("Achievements").orderByChild("email").equalTo(""+data.email).on("value", (snapshot)=> {
+      if(snapshot.exists()){
+        this.setState({progress1:false})
+        snapshot.forEach((childSnapshot) => {
+        var rdata = childSnapshot.val();
+         var obj = {
+          id : rdata.id ,
+          logo : rdata.image ,
+          orgName : rdata.orgName ,
+          cerDetails : rdata.certificeDetail ,
+          gettingSkills : rdata.skills ,
+          CompletionDate : rdata.completeDate ,
+          orgLink : rdata.orgLink ,
+          speciality:rdata.speciality ,
+          type : rdata.certificateType ,
+          subject : rdata.subject
+         }
+        myAchievements.push(obj);
+        this.setState({myAchievements})
+      })
+    }else{
+      this.setState({progress1:false})
+    }
+     })
+    
+  }
 
   showFullData(e){
     const {dataIndex}  = this.state; 
@@ -53,7 +81,7 @@ class studentShareAchivement extends Component {
 
   shareAchieve(){
 
-    const { special ,type } = this.state;
+   const { special ,type  , myAchievements , progress} = this.state;
 
     var a1 = document.getElementById('subject').value;
     var b1 = document.getElementById('Org_name').value;
@@ -92,17 +120,28 @@ class studentShareAchivement extends Component {
       Swal.fire('Oops' , 'Please Select Youe Certificate Speciality' , 'error')
     }
     else{
+
         this.setState({progress:true})
-         var storageref = firebase.storage().ref("storage");
+      
+        while(myAchievements.length > 0) {
+          myAchievements.splice(0,1); 
+         }
+     
+      
+        var storageref = firebase.storage().ref("storage");
             var uploadtask= storageref.child(''+(new Date()).getTime()+file.name).put(file).then((snapshot)=>{
             return snapshot.ref.getDownloadURL();
             }).then(downloadURL => {
             var data = this.props.details;
-             var database = firebase.database().ref();
+             
+            var database = firebase.database().ref();
             
-              var skey =firebase.database().ref(`${data.rollNo}/Achievements`).push();
+              var skey =firebase.database().ref('Achievements').push();
             
               var certificateObj = {
+                userID : data.id ,
+                rollNo : data.rollNo ,
+                email : data.email ,
                 id : skey.key,
                 subject : a1 ,
                 orgName : b1,
@@ -112,19 +151,46 @@ class studentShareAchivement extends Component {
                 completeDate : f1 ,
                 certificateType : type , 
                 speciality : special ,
-                image :  downloadURL
+                image :  downloadURL ,
+                userName : data.name
               }
               skey.set(certificateObj); 
+
+              firebase.database().ref(`Student/${data.rollNo}/Achievements`).push().set({subject : a1});
+
               this.setState({progress:false})
               Swal.fire('Congratulation', 'Your Achievement Added Successfully')
         }) 
     }
 }
 
+delete(id){
+
+// Swal.fire('Done', 'Data Deleted Successfully')
+
+Swal.fire({
+  title: 'Are you sure?',
+  text: "You won't be able to revert this!",
+  type: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#3085d6',
+  cancelButtonColor: '#d33',
+  confirmButtonText: 'Yes, delete it!'
+}).then((result) => {
+  if (result.value) {
+    firebase.database().ref(`Achievements/${id}`).set({});
+    Swal.fire(
+      'Deleted!',
+      'Your data has been deleted.',
+      'success'
+    )
+  }
+})
+
+}
 
   render(){
-      const {myAchievements , dataIndex , progress} = this.state;
-      this.addData();
+      const {myAchievements , dataIndex , progress , progress1} = this.state; 
       return(
           <div className="mainDivAH">
 
@@ -140,22 +206,31 @@ class studentShareAchivement extends Component {
               <div id="sdata" className="col-lg scrollbar square scrollbar-lady-lips thin" style={{ height:'750px' , overflowY:'scroll' , textAlign:'center' , margin:'20px'}}> 
               <h6 className="pagination-centered" style={{color:'rgb(20, 194, 224)'}}> Shared Achievements </h6>
                 <hr/>
-              {
-                  
+                {myAchievements.length<1 && <h5> No Achievements Found </h5>}
+                {progress1 && <div class='loaddiv'>
+                    <div class="loader"></div>
+                    <p><b>Loading please wait</b></p>
+                  </div> }
+
+              { 
                   myAchievements.map((val , ind)=>{
                         return(
-                           <div  className="viewDivAH">
+                           <div  className="viewDivAH" id='div11'>
+                              {console.log('data' , myAchievements)}
                               <p style={{textAlign:'center'}}> <img style={{width:'200px' , height:'150px'}} src={val.logo}/> </p>
                               <hr/>
                               <p  style={{width:'500px'}} > 
-                              <b> "{val.about}"  </b> <br/><br/>
+                               <p style={{textAlign:'center'}}><b> "{val.subject}"  </b></p><br/>
+                              <b> Completion Date: </b> {val.CompletionDate} <br/>
                               <b> Organization Name : </b>  {val.orgName} <br/>
                               <b> Organization Web : </b> {val.orgLink} <br/>  
                               <b> Certification Details : </b> {val.cerDetails} <br/> 
                               <b> Achievied Skills: </b> {val.gettingSkills} <br/>
                               <b> Completion Date: </b> {val.CompletionDate} <br/>
+                              <b> Speciality: </b> {val.speciality} <br/>
+                              <b> Degree Type: </b> {val.type} <br/>
                               </p>
-                              <div align="right"> <Button text='Delete'  type='submit' /> </div>
+                              <div align="right"> <Button text='Delete'  type='submit' onClick={(e)=>{this.delete(val.id)}} /> </div>
                            </div>
                        )
                     })
