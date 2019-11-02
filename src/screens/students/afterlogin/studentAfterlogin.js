@@ -4,6 +4,9 @@ import './studentAfterLogin.css';
 import '../../../css/scrollbar.css';
 import {Link} from 'react-router-dom'; 
 import {Button} from '../../../components/button/button.js'
+import firebase from '../../../config/firebase.js'
+import { connect } from 'react-redux';
+import Swal from 'sweetalert2'
 // import { CustomErrorComponent } from 'custom-error';
 
 
@@ -22,13 +25,72 @@ class studentAfterLogin extends Component {
         this.Recentjob = this.Recentjob.bind(this)
       }
 
+      componentDidMount(){
+          this.addData();
+      }
+
+    addData(){
+        const {JobsNF} = this.state;
+          
+        firebase.database().ref(`/Jobs`).on("value", (snapshot)=> {
+         
+          snapshot.forEach((childSnapshot)=> {
+           var d = childSnapshot.val();
+          var obj = {
+           id : d.id ,
+           logo : d.clogo ,
+           Jimg : d.image ,
+           orgName : d.cemail ,
+           description : d.detail ,
+           date : d.date ,
+           experience : d.workType,
+           type : d.jobType ,
+           cid : d.cid ,
+           category : d.category ,
+           subject : d.subject
+          }
+          JobsNF.push(obj);
+          this.setState({JobsNF})
+          })
+        })
+    }  
+
+
       
+    addFav(i){
+        const {JobsNF} = this.state;
+        var data = this.props.details;
+        var skey = firebase.database().ref("Favourite/"+data.rollNo).push();
+        var obj = {
+                id:skey.key,
+                logo : JobsNF[i].logo ,
+                Jimg : JobsNF[i].Jimg ,
+                orgName : JobsNF[i].orgName ,
+                description : JobsNF[i].description ,
+                date : JobsNF[i].date ,
+                experience : JobsNF[i].experience,
+                type : JobsNF[i].type ,
+                cid : JobsNF[i].cid ,
+                category : JobsNF[i].category ,
+                subject : JobsNF[i].subject
+        }
+     
+      skey.set(obj);
+      Swal.fire('Done' , 'Add Favourite Successfully')
+    }
+
+    viewProf(i){
+        const {JobsNF} = this.state;
+        localStorage.setItem('orgID' , JobsNF[i].cid);
+        this.props.history.push('./stuViewOrg')
+       }
+
       data(){
         const {arr1 , arr2 , JobsNF} = this.state;
 
-        JobsNF.push({ id:'awexgbt' ,logo:require('../../../images/ssuet.png') , Jimg:require('../../../images/j1.jpg') , orgName:'SSUET' , address:'nipa , Gulshan , Karachi' , subject:'Seminar on AI' , description:'The Distant Future - Ai and robots are far behind computers but it’ll only be a matter of time before they become as regular as cell phones are in our everyday life. - Ray Kurzweil has used Moore’s law (which describes the relentless exponential improvement in digital technology with uncanny accuracy) to calculate that desktop computers will have the same processing power as human brains by the year 2029, and that by 2045 artificial intelligence will reach a point where it is able to improve itself at a rate that far exceeds anything conceivable in the past. - Several futurists and science fiction writers have predicted that human beings and machines will merge in the future into Cyborgs that are more capable and powerful than either. This idea, called trans-humanism.' , date:'12-7-19' , websiteLink : 'ssuet.edu.pk' , type:'Seminar' })
-        JobsNF.push({ id:'1we4hji' ,logo:require('../../../images/oracle.png') , Jimg:require('../../../images/j2.jpg') , orgName:'App Bakers' , address:'near Expo Centre , Gulshan , Karachi' , subject:'Job Available for full stack Developer' , description:'We are looking for a highly skilled computer programmer who is comfortable with both front and back end programming. Full Stack Developers are responsible for developing and designing front end web architecture, ensuring the responsiveness of applications and working alongside graphic designers for web design features, among other duties. Full Stack Developers will be required to see out a project from conception to final product, requiring good organizational skills and attention to detail.' , date:'30-6-19' , websiteLink : 'www.AppBakers.com' , type:'Job' })
-        JobsNF.push({ id:'dfmk30f' ,logo:require('../../../images/decima.png') , orgName:'Decima.AI' , Jimg:require('../../../images/j3.png') , address:'DHA phase 5 , Karachi' , subject:'Internships Available for full Software Engineer' , description:'We are looking for a  skilled computer programmer who is comfortable with java programming. Please Send your resume at Decima@gmail.com ' , date:'27-6-19' , websiteLink : 'www.DecimaAI.com' , type:'internship' })
+        // JobsNF.push({ id:'awexgbt' ,logo:require('../../../images/ssuet.png') , Jimg:require('../../../images/j1.jpg') , orgName:'SSUET' , address:'nipa , Gulshan , Karachi' , subject:'Seminar on AI' , description:'The Distant Future - Ai and robots are far behind computers but it’ll only be a matter of time before they become as regular as cell phones are in our everyday life. - Ray Kurzweil has used Moore’s law (which describes the relentless exponential improvement in digital technology with uncanny accuracy) to calculate that desktop computers will have the same processing power as human brains by the year 2029, and that by 2045 artificial intelligence will reach a point where it is able to improve itself at a rate that far exceeds anything conceivable in the past. - Several futurists and science fiction writers have predicted that human beings and machines will merge in the future into Cyborgs that are more capable and powerful than either. This idea, called trans-humanism.' , date:'12-7-19' , websiteLink : 'ssuet.edu.pk' , type:'Seminar' })
+        // JobsNF.push({ id:'1we4hji' ,logo:require('../../../images/oracle.png') , Jimg:require('../../../images/j2.jpg') , orgName:'App Bakers' , address:'near Expo Centre , Gulshan , Karachi' , subject:'Job Available for full stack Developer' , description:'We are looking for a highly skilled computer programmer who is comfortable with both front and back end programming. Full Stack Developers are responsible for developing and designing front end web architecture, ensuring the responsiveness of applications and working alongside graphic designers for web design features, among other duties. Full Stack Developers will be required to see out a project from conception to final product, requiring good organizational skills and attention to detail.' , date:'30-6-19' , websiteLink : 'www.AppBakers.com' , type:'Job' })
+        // JobsNF.push({ id:'dfmk30f' ,logo:require('../../../images/decima.png') , orgName:'Decima.AI' , Jimg:require('../../../images/j3.png') , address:'DHA phase 5 , Karachi' , subject:'Internships Available for full Software Engineer' , description:'We are looking for a  skilled computer programmer who is comfortable with java programming. Please Send your resume at Decima@gmail.com ' , date:'27-6-19' , websiteLink : 'www.DecimaAI.com' , type:'internship' })
     
         arr1.push({name:'Oracle' , for : 'Computer Science' , type:'job' , Date:'10/1/19' , img:require('../../../images/oracle.png') })
         arr1.push({name:'SSUET' , for : 'Software' , type:'intern', Date:'12/7/12' , img:require('../../../images/ssuet.png') })
@@ -61,9 +123,9 @@ class studentAfterLogin extends Component {
       <div style={{minWidth:'370px' , margin:'1px auto'}}>
 
         <div className="sidenavAF">
-            <p  className="SAFp" > <img  className="SAFuimg" />  </p>
+            <p  className="SAFp" > <img  className="SAFuimg" src={this.props.details.imgURL}  />  </p>
             <p style={{textAlign:'center'}}>
-                <h6> <b> Asad </b> </h6>
+                <h6> <b> {this.props.details.name} </b> </h6>
                 <p style={{fontSize:'12px'}}> Sirsyed University </p>
             </p>
             <hr/>
@@ -132,12 +194,12 @@ class studentAfterLogin extends Component {
                     </figure>
                     </Link>
 
-                    <Link to="/stuReminder" >
+                    {/* <Link to="/stuReminder" >
                     <figure>
                         <img style={{width:'auto' , height:'25px'}} src={require('../../../images/rem.jpg')} />
                         <figcaption><b style={{color: 'white' , fontSize:'11px'}} > Reminder </b> </figcaption>
                     </figure>
-                    </Link>
+                    </Link> */}
 
                     <Link to="/stuSendComplain" >
                     <figure >
@@ -190,7 +252,7 @@ class studentAfterLogin extends Component {
                                   <p className="SAForgnme">{val.orgName}</p> */}
                                   <figure>
                                      <img  style={{width:'50px' , height:'50px'}} src={val.logo}/> 
-                                     <figcaption style={{fontSize:'12px'}}><b>{val.orgName}</b></figcaption>
+                                     <figcaption style={{fontSize:'14px'}}><b>{val.orgName}</b></figcaption>
                                 </figure>
                               </div>
                                <h6 className="text-center" style={{color:'rgb(20, 194, 224)' , marginTop:'10px'}} > &nbsp; {val.subject } </h6>              
@@ -204,9 +266,9 @@ class studentAfterLogin extends Component {
                               <div className="col-md-4 SAFddiv3">
                               <p style={{fontSize:'13px'}}> 
                               <b> Last Date : </b> {val.date} <br/> 
-                              <b> Category : </b> {val.websiteLink} <br/>
+                              <b> Category : </b> {val.category} <br/>
                               <b> Event Type : </b> {val.type} <br/>
-                              <b> Work Experienced : </b> {val.address}   
+                              <b> Work Experienced : </b> {val.experience}   
                               <hr/>
                              </p>
                             
@@ -229,22 +291,22 @@ class studentAfterLogin extends Component {
                             </figure>
 
                             &nbsp; &nbsp;
-                            <figure style={{display:'inline-block'}}>
+                            <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
                                 <img  style={{width:'25px' , height:'25px'}} src={require('../../../images/user.jpg')}/> 
                                 <figcaption style={{fontSize:'10px'}}><b> Profile</b></figcaption>
                             </figure>
 
                             &nbsp; &nbsp;
-                            <figure style={{display:'inline-block'}}>
+                            <figure style={{display:'inline-block'}} onClick={(e)=>this.addFav(index)}>
                             <img src={require('../../../images/fav.png')}  style={{width:'25px' , height:'25px'}}/>
                             <figcaption style={{fontSize:'10px'}}><b>Favourite</b></figcaption>
                             </figure>
 
-                            &nbsp; &nbsp;
+                            {/* &nbsp; &nbsp;
                             <figure style={{display:'inline-block'}}>
                             <img src={require('../../../images/download.png')}  style={{width:'25px' , height:'25px'}}/>
                             <figcaption style={{fontSize:'10px'}}><b>Download</b></figcaption>
-                            </figure>
+                            </figure> */}
 
                              </div>
 
@@ -263,4 +325,17 @@ class studentAfterLogin extends Component {
   }
 }
 
-export default studentAfterLogin;
+function mapStateToProp(state) {
+    return ({
+      details: state.root. studentInfo ,
+      accounttype : state.root.accountType
+    })
+  }
+  function mapDispatchToProp(dispatch) {
+    return ({
+        //  getUserinfo : (info)=>{ dispatch(SignupDetail(info))}
+    })
+  }
+  
+  export default connect(mapStateToProp, mapDispatchToProp)(studentAfterLogin);
+  

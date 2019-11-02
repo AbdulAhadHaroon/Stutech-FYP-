@@ -121,7 +121,7 @@ class Login extends Component {
           
             var orgObj = {
               name : data.name ,
-              address : data.DOB ,
+              address : data.address ,
               email : data.email ,
               id : data.id ,
               imgURL : data.imgURL ,

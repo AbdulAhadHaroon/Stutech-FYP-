@@ -54,8 +54,8 @@ class Signup1 extends Component {
    else if(e!=f ){
     Swal.fire('Oops...', 'Please Check Your Re-type Password', 'error')
    }
-   else if(d.length<13 || d.length>13){
-    Swal.fire('Oops...', 'Please Must Write Your Number in this Format +923120000000', 'error')
+   else if(d.length<12 || d.length>12){
+    Swal.fire('Oops...', 'Please Must Write Your Number in this Format 923120000000', 'error')
    }
    else if(document.getElementById("r1").checked == false && document.getElementById("r2").checked == false){
     Swal.fire('Oops...', 'Please Select Your Gender', 'error')

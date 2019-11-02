@@ -45,10 +45,12 @@ componentDidMount(){
     viewProfile(i){
      const {AchievementsArr} = this.state;
     
-      var obj = {
-      rollNo :  AchievementsArr[i].rollNo,
-      id : AchievementsArr[i].userid,
-      email : AchievementsArr[i].email,
+    var obj = {
+      rollNo :  AchievementsArr[i].rollNo ,
+      id : AchievementsArr[i].userid ,
+      name : AchievementsArr[i].name ,
+      email : AchievementsArr[i].email ,
+      image : AchievementsArr[i].image
     }
     this.props.dInfo(obj)
     this.props.history.push("/stuDynamicProfile")

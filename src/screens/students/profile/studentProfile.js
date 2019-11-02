@@ -239,8 +239,8 @@ class Studentprofile extends Component {
    
   updateNumber2(){
     var add = document.getElementById('number2').value;
-    if(add=='undefined' || add.length<13){
-      Swal.fire('Oops...', 'Please Write Your Correct Number', 'error')
+    if(add=='undefined'  || add.length<12 || add.length>12){
+      Swal.fire('Oops...', 'Please Write Your Correct Number in 923000000000', 'error')
     }
     else{
       var data = this.props.details;

@@ -9,6 +9,7 @@ import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap
 import studentProfile from '../profile/studentProfile';
 import { connect } from 'react-redux';
 import firebase from '../../../config/firebase.js'
+import {ChatData} from '../../../store/action/action';
 
 class StuDynamicProfile extends Component {
   
@@ -34,6 +35,23 @@ class StuDynamicProfile extends Component {
 
   componentDidMount(){
       this.addData();
+  }
+
+  StartChat(){
+
+   var data = this.props.details;
+
+   var obj = {
+    rollNo :  data.rollNo,
+    id : data.id ,
+    name : data.name ,
+    email : data.email ,
+    image : data.image
+  }
+
+  this.props.chatinfo(obj)
+  this.props.history.push("/chatMes")
+
   }
 
   addData(){
@@ -158,7 +176,7 @@ class StuDynamicProfile extends Component {
                    
 
                   <p style={{textAlign:'center'}}>  
-                  <Button text="Chat"/>
+                  <Button text="Chat" onClick={()=>this.StartChat()}/>
                   <Button text="Message"/>
                   <Button text="Email"/> 
                   </p>
@@ -180,7 +198,7 @@ class StuDynamicProfile extends Component {
       }
       function mapDispatchToProp(dispatch) {
         return ({
-            //  getUserinfo : (info)=>{ dispatch(SignupDetail(info))}
+              chatinfo : (info)=>{ dispatch(ChatData(info))}
         })
       }
       

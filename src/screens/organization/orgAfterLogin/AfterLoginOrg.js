@@ -5,6 +5,16 @@ import '../../../css/scrollbar.css';
 import {Link} from 'react-router-dom'; 
 import {Button} from '../../../components/button/button.js'
 import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import Swal from 'sweetalert2'
+import firebase from '../../../config/firebase.js'
+import '../../Loader/loader.css'
+
+// history.pushState(null, null, location.href);
+// window.onpopstate = function () {
+//   swal.filr('done' ,'press Signout button to exit or signout');
+//     history.go(1);
+// };
 
 
 class orgAfterLogin extends Component {
@@ -13,26 +23,82 @@ class orgAfterLogin extends Component {
         super(props);
     
         this.state = {
-           chatList:[]
+           chatList:[] ,
+           message:[]
          }
-         this.addChat=this.addChat.bind(this);
-      }
-    
-      addChat(){
-        const {chatList} = this.state;
-        chatList.push({name:'Riaz' , Depart:'SE'})
-        chatList.push({name:'Malik' , Depart:'CE'})
-        chatList.push({name:'Huzaifa' , Depart:'IT'})
-        chatList.push({name:'Watan' , Depart:'SE'})
-        chatList.push({name:'Kashmir' , Depart:'CE'})
       }
 
+      componentDidMount(){
+        this.showMessage();
+      }
+
+      showMessage(){
+        const {message} = this.state;
+        var data = this.props.details;
+        firebase.database().ref(`/Messages/${data.id}`).on("value", (snapshot)=> {
+          if(snapshot.exists()){
+          snapshot.forEach((childSnapshot)=> {
+           var obj = {
+            message : childSnapshot.val().description ,
+            from : childSnapshot.val().from 
+          }
+          message.push(obj);
+          this.setState({message})
+          })
+        }
+        })
+      }
+
+   
+
+
+//  signout(){
+
+//     firebase.auth().signOut()
+//     .then(function() {
+//       this.props.organizationInfo('none')
+//       this.props.history.push('/')
+//     })
+//     .catch(function(error) {
+//       Swal.fire('Oops' , error , 'error');
+//     });    
+// }
+    
+     
+
+      sendMessage(){
+        var data = this.props.details;
+
+        var sub = document.getElementById('subject').value;
+        var des = document.getElementById('des').value;
+        
+        if(sub.length<10){
+          Swal.fire('Ooops' , 'Subject should contain 10 or more characters ' , 'error')
+        }
+        else if(des.length<20){
+          Swal.fire('Ooops' , 'Description should contain 20 or more characters ' , 'error')
+        }
+        else{
+
+        var obj = {
+          id:data.id ,
+          subject : sub ,
+          description : des ,
+          from : 'organization' , 
+          name : data.name
+        }
+
+
+        firebase.database().ref("Messages/"+data.id).push().set(obj);
+        Swal.fire('Done' , 'Message Sent Succesfully')
+       }
+      }
       
       
 
   render() {
-    const { chatList } = this.state;
-    this.addChat();
+    const { chatList , message } = this.state;
+    
     return (
         
       <div >
@@ -68,14 +134,14 @@ class orgAfterLogin extends Component {
 
 
         <div className="sidenavOAF">
-            <p  className="OAFp" > <img  className="OAFuimg" />  </p>
+            <p  className="OAFp" > <img  className="OAFuimg" src={this.props.details.imgURL} />  </p>
             <p style={{textAlign:'center'}}>
-                <h6> <b> Ubaid Arif </b> </h6>
-                <p  style={{fontSize:'12px'}}> <b> Decima.AI </b> </p>
+                {/* <h6> <b> Ubaid Arif </b> </h6> */}
+                <p  style={{fontSize:'12px'}}> <b> {this.props.details.name} </b> </p>
                 <hr/>
-                <p style={{fontSize:'12px' , marginBottom:'2px'}}> <b>Location : </b> nipa , Gulshan , Karachi </p>
-                <p style={{fontSize:'12px' , marginBottom:'2px'}}> <b>Email : </b> Decima.AI@gmail.com </p>
-                <p style={{fontSize:'12px' , marginBottom:'2px'}}> <b>Phone : </b> 0213-5491730 </p>
+                <p style={{fontSize:'12px' , marginBottom:'2px'}}> <b>Address : </b> {this.props.details.address} </p>
+                <p style={{fontSize:'12px' , marginBottom:'2px'}}> <b>Email : </b> {this.props.details.email} </p>
+                <p style={{fontSize:'12px' , marginBottom:'2px'}}> <b>Phone : </b> {this.props.details.number}</p>
             </p>
              
         </div>
@@ -146,7 +212,7 @@ class orgAfterLogin extends Component {
                       <div className="input-group-prepend">
                         <div className="input-group-text" style={{width:'40px'}}>S</div>
                       </div>
-                      <input style={{fontSize:'12px' }} type="text" className="form-control" id="u_email" placeholder="Write your Subject"/>
+                      <input style={{fontSize:'12px' }} type="text" className="form-control" id="subject" placeholder="Write your Subject"/>
                     </div>
                   </div>
 
@@ -155,23 +221,27 @@ class orgAfterLogin extends Component {
                       <div className="input-group-prepend">
                         <div className="input-group-text" style={{width:'40px'}}>D</div>
                       </div>
-                      <input type="text" style={{fontSize:'12px' , height:'90px'}} className="form-control" id="u_email" placeholder="Write Description in Details"/>
+                      <input type="text" style={{fontSize:'12px' , height:'90px'}} className="form-control" id="des" placeholder="Write Description in Details"/>
                     </div>
                   </div>
 
-                  <Button text='submit' type='submit' />
+                  <Button text='submit' type='submit' onClick={()=>this.sendMessage()} />
               </div>
 
               <div  className="formDiv2OAF col-xl scrollbar square scrollbar-lady-lips thin" style={{overflowY:'scroll'}} > 
-                 <h6  className="sticky-top h4smdivORG"> <b> Message From Admin </b> </h6>
+                 <h6  className="sticky-top h4smdivORG"> <b> Messages </b> </h6>
                  <hr/>
                  {
-                   chatList.map((val , index ) => {
+                   message.map((val , index ) => {
                     return(
-                      <div className="row scrollbar square scrollbar-lady-lips thin" style={{border:'solid 2px rgb(27, 180, 207)' , padding:'5px' , margin:'15px' , height:'60px' , overflowY:'scroll'}}>
-                        <img  style={{width:'40px' , height:'40px'}} src={require('../../../images/user.png')}/>
-                        <p  style={{marginLeft:'20px' , marginTop:'15px' , fontSize:'15px' }}>
-                          <h6 style={{fontSize:'13px'}} ><b>Message :</b> {val.name}</h6>
+                      <div className="row scrollbar square scrollbar-lady-lips thin" style={{border:'solid 2px rgb(27, 180, 207)' , padding:'5px' , margin:'15px' , height:'80px' , overflowY:'scroll'}}>
+                        {/* <img  style={{width:'40px' , height:'40px'}} src={require('../../../images/user.png')}/> */}
+                        <p  style={{marginLeft:'20px'  , fontSize:'15px' , textAlign:'left' }}>
+                          <h6 style={{fontSize:'13px'}} >
+                          <b>From:</b> {val.from} <br/>
+                          <b>Message:</b> {val.message} <br/>
+                          </h6>
+
                         </p>
                       </div>
                     )
@@ -184,12 +254,13 @@ class orgAfterLogin extends Component {
                  <h6 className="sticky-top h4smdivORG"> <b> Notification  </b> </h6>
                  <hr/>
                  {
-                   chatList.map((val , index ) => {
+                   message.map((val , index ) => {
                     return(
-                      <div className="row" style={{border:'solid 2px rgb(27, 180, 207)' , padding:'5px' , margin:'15px' , height:'60px'}}>
+                      <div className="row scrollbar square scrollbar-lady-lips thin" style={{border:'solid 2px rgb(27, 180, 207)' , padding:'5px' , margin:'15px' , height:'80px' , overflowY:'scroll'}}>
+                    
                         {/* <img  style={{width:'80px' , height:'80px'}} src={require('../../../images/user.png')}/> */}
                         <p style={{marginLeft:'20px' , marginTop:'15px' , height:'60px'}}>
-                          <h6 style={{fontSize:'15px'}}><b>Notification: </b>{val.name}</h6>
+                          <h6 style={{fontSize:'15px'}}><b>Notification: </b>{'Dear Organization ! On 15th November , there is exhibation of Final Year Project . If You are Interested in then contact to admin'}</h6>
                           {/* <p style={{float:'right'}}> <Button text='chat' type='submit' /> </p> */}
                         </p>
                       </div>
@@ -205,4 +276,17 @@ class orgAfterLogin extends Component {
   }
 }
 
-export default orgAfterLogin;
+function mapStateToProp(state) {
+  return ({
+    details: state.root.  organizationInfo ,
+    accounttype : state.root.accountType
+  })
+}
+
+function mapDispatchToProp(dispatch) {
+  return ({ 
+    // organizationInfo :(info3)=>{ dispatch(OrganizationDetail(info3))} ,
+  })
+}
+
+export default connect(mapStateToProp, mapDispatchToProp)(orgAfterLogin);

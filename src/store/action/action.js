@@ -9,6 +9,13 @@ export function DynamicData(dinfo) {
     }
 }
 
+export function ChatData(chinfo) {
+    return dispatch => {
+        dispatch({ type: 'CHATDATA', payload: chinfo  })
+    }
+}
+
+
 export function SignupDetail(cinfo) {
     return dispatch => {
         dispatch({ type: 'SIGNUPINFO', payload: cinfo  })

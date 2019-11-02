@@ -5,6 +5,9 @@ import {store , persistor} from './store';
 
 import './App.css';
 
+// import mail from './screens/email/mailform.js'
+// import sms from './screens/sms/index.js'
+
 import Afterlogin from './screens/students/afterlogin/studentAfterlogin.js'
 import Login from './screens/login/Login.js'
 import N4 from './screens/N404.js'
@@ -59,6 +62,11 @@ class App extends Component {
       <Router>
         <Switch> 
           <Route exact path="/" component={Login}/>
+
+          {/* <Route exact path="/mail" component={mail}/>
+          <Route exact path="/sms" component={sms}/> */}
+
+
           <Route exact path="/signup1" component={Signup1}/>
           <Route exact path="/signup2" component={Signup2}/>
           <Route exact path="/signuporg" component={OrgSignup}/>
