@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
 import { connect } from 'react-redux';
 import firebase from '../../config/firebase.js';
 import { messaging } from 'firebase';
+import {DynamicData} from '../../store/action/action';
 
 class ChatMessenger extends Component {
   
@@ -19,7 +20,8 @@ class ChatMessenger extends Component {
         pushNode1 : 'none' ,
         pushNode2 : 'none' ,
         userObj : {} ,
-        myObj : {}
+        myObj : {} ,
+        deleteID : null
          
     }
   }
@@ -29,14 +31,74 @@ class ChatMessenger extends Component {
   }
 
   addData(){
-    const { myChatList} = this.state;
+   const { myChatList , deleteID , myObj} = this.state;
+    
+   this.setState({deleteID:null})
+
     var chatdata = this.props.cinfo;
-    var data = this.props.details;
+  
+    if(this.props.accounttype=='Student'){
+     
+      var data = this.props.detailsstu;   
+
+      this.setState({myObj:{
+       ...this.state.myObj ,
+        name : data.name ,
+        id: data.id ,
+        email : data.email ,
+        image : data.imgURL 
+      }})
+
+    }else if(this.props.accounttype=='Organization'){
+      var data = this.props.detailsorg;
+
+      this.setState({
+        myObj : {
+        ...this.state.myObj ,
+        name : data.name ,
+        id: data.id ,
+        email : data.email ,
+        image : data.imgURL 
+      }})
+    //   ({myObj: (this.state.myObj, {name : data.name ,
+    //     id: data.id ,
+    //     email : data.email ,
+    //     image : data.imgURL 
+    //   })
+    // });
+
+    }else if(this.props.accounttype=='Teacher'){
+      var data = this.props.detailstech;
+      var obj1 = {
+        name : data.name ,
+        id: data.id ,
+        email : data.email ,
+        image : data.imgURL 
+      }
+      console.log('object' , obj1)  
+    this.setState({myObj:obj1})
+
+    }else if(this.props.accounttype=='Admin'){
+      var data = this.props.detailsadm;
+      var obj1 = {
+        name : data.name ,
+        id: data.id ,
+        email : data.email ,
+        image : data.imgURL 
+      }
+    console.log('object' , obj1)
+    this.setState({myObj:obj1})
+    }else{
+      Swal.fire('Oops' , 'Account Not Exist')
+    }
+
+
     if(chatdata.name == undefined || chatdata.name==null || chatdata.name=='undefined')
     {
-           
+      this.showChatlist(); 
     }
     else{
+
       this.showmessage(chatdata.id);
       
       var obj = {
@@ -45,24 +107,47 @@ class ChatMessenger extends Component {
         email : chatdata.email ,
         image : chatdata.image 
       }
-      
-    var skey =  firebase.database().ref(`chatList/${data.id}/${chatdata.id}`);
-    skey.set(obj)
+     
 
-      var pNode1 = chatdata.id + data.id;
-      var pNode2 =  data.id + chatdata.id;
-      this.setState({pushNode1:pNode1 , pushNode2:pNode2 , userObj:obj})
+    var skey =  firebase.database().ref(`chatList/${myObj.id}/${chatdata.id}`);
+    skey.set(obj)
+    var fkey =  firebase.database().ref(`chatList/${chatdata.id}/${myObj.id}`);
+    fkey.set(myObj)
+
+      var pNode1 = chatdata.id + myObj.id;
+      var pNode2 =  myObj.id + chatdata.id;
+      this.setState({pushNode1:pNode1 , pushNode2:pNode2 , userObj:obj , deleteID:chatdata.id })
 
       }
-      // myChatList.push({ id:'awexgbt' ,logo:require('../../images/c1.jpg') ,  Name:'Saylani' , Email:'malik@gmail.com'  }) 
-      // myChatList.push({ id:'1we4hji' ,logo:require('../../images/c2.jpg')  , Name:'AppTech' , Email:'bilal@gmail.com'}) 
-      // myChatList.push({ id:'dfmk30f' ,logo:require('../../images/c3.jpg')  , Name:'SSUET' , Email:'zubair@gmail.com'})
+    }
+
+    setDetail(ind){
+      const {myChatList , myMessage , myObj} = this.state;
+      var id = myChatList[ind].id;
+
+      while(myMessage.length > 0) {
+        myMessage.splice(0,1); 
+        // this.setState({myMessage});
+       }
+
+      this.showmessage(id);
+
+      var pNode1 = id + myObj.id;
+      var pNode2 =  myObj.id + id;
+
+      var obj = {
+        name : myChatList[ind].Name ,
+        id: myChatList[ind].id,
+        email : myChatList[ind].Email ,
+        image : myChatList[ind].logo 
+      }
+
+      this.setState({pushNode1:pNode1 , pushNode2:pNode2 , userObj:obj , deleteID:id})
     }
 
     sendMessage(){
-    const { pushNode1 , pushNode2 } = this.state;
+    const { pushNode1 , pushNode2 , myObj } = this.state;
     var chatdata = this.props.cinfo;
-    var data = this.props.details;
 
     var  mesg = document.getElementById('msg').value;
 
@@ -71,23 +156,41 @@ class ChatMessenger extends Component {
       }
       else{
         var skey =  firebase.database().ref( `chating/${chatdata.id}/${pushNode1}`).push();
-        var dkey =  firebase.database().ref( `chating/${data.id}/${pushNode2}`).push();
+        var dkey =  firebase.database().ref( `chating/${myObj.id}/${pushNode2}`).push();
         const msgObj = {
                  message: mesg,
                  time: (new Date()).getTime(),
-                 id:data.id
+                 id:myObj.id
                 };  
                 skey.set(msgObj);
                 dkey.set(msgObj);                
       }
   }
 
+  showChatlist(){
+    const {myChatList , myObj } = this.state;
+
+    firebase.database().ref(`chatList/${myObj.id}`).on("value", (snapshot)=> {
+      if(snapshot.exists()){
+        // this.setState({progress:false})
+        snapshot.forEach((childSnapshot) => {
+         var obj = {
+           id : childSnapshot.val().id ,
+           logo : childSnapshot.val().image ,
+           Name : childSnapshot.val().name ,
+           Email : childSnapshot.val().email 
+         }
+          myChatList.push(obj);
+         this.setState({myChatList})
+        })
+      }
+    })
+  }  
+
 showmessage(fid){
-  const { myChatList , pushNode1 , pushNode2 , myMessage } = this.state;
-  var data = this.props.details;
-  
-  
-  firebase.database().ref().child(`chating/${data.id}/${data.id+fid}`).on('child_added', (snap) => {
+  const { myChatList , pushNode1 , pushNode2 , myMessage , myObj } = this.state;
+  console.log( myObj + 'show message' + fid )
+  firebase.database().ref().child(`chating/${myObj.id}/${myObj.id+fid}`).on('child_added', (snap) => {
   
     var obj = {
        message :  snap.val().message ,
@@ -100,8 +203,8 @@ showmessage(fid){
 
 
   render(){
-      const {myChatList  , pushNode1 , pushNode2 , userObj , myMessage} = this.state;
-      var data = this.props.details;
+      const {myChatList  , pushNode1 , pushNode2 , userObj , myMessage , myObj} = this.state;
+      
       return(
           <div className="mainDivCM">
 
@@ -119,14 +222,14 @@ showmessage(fid){
                 <hr/>
               {
                   
-                  myChatList.map((val , ind)=>{
+                 myChatList.map((val , ind)=>{
                         return(
-                           <div  className="row viewDivCM" >
+                           <div  className="row viewDivCM"  style={{textAlign:'center'}}  onClick={(e)=>this.setDetail(ind)} >
                               <div className='col-md-1' style={{minWidth:'50px'}} > <img className='uimgCM' src={val.logo}/> </div>
                               <div className="col-md" >
                               <p style={{fontSize:'12px'}}> 
-                              <b style={{fontSize:'12px'}} >Name : </b>  {val.Name} <br/>
-                              <b style={{fontSize:'12px'}}> Email : </b> {val.Email} <br/>  
+                              <b style={{fontSize:'12px'}} >   {val.Name} </b> <br/>
+                              <b style={{fontSize:'12px'}}>  </b> {val.Email} <br/>  
                               </p>
                               </div>
                            </div>
@@ -142,17 +245,17 @@ showmessage(fid){
                     <p id="btn1CM"><button className="BtnCM"  > Delete Chat </button> </p> 
                     <p> 
                     TO : {  userObj.name } <br/>
-                    From : { data.name }
+                    From : { myObj.name }
                     </p>
                     <hr/>
                     <div id="chat"  className="cdiv scrollbar square scrollbar-lady-lips thin">
                     {
-                     myMessage.map((val , ind)=>{
+                   myMessage.length>1 &&  myMessage.map((val , ind)=>{
                       return(
                     <div>    
-                     { val.id == data.id && <div className="alert alert-success" style={{fontSize:'12px' , width:'50%' , marginLeft:'50%'}} > {val.message}   </div>  }
+                     { val.id == myObj.id && <div className="alert alert-success" style={{fontSize:'12px' , width:'50%' , marginLeft:'50%'}} > {val.message}   </div>  }
                      <br/> 
-                     { val.id != data.id && <div className="alert alert-primary"  style={{fontSize:'12px' , width:'50%'}} > {val.message}  </div>}
+                     { val.id != myObj.id && <div className="alert alert-primary"  style={{fontSize:'12px' , width:'50%'}} > {val.message}  </div>}
                     </div>
                   )
                   })
@@ -174,12 +277,16 @@ showmessage(fid){
 function mapStateToProp(state) {
   return ({
     cinfo: state.root.chatInfo ,
-    details : state.root.organizationInfo,
+    detailsorg : state.root.organizationInfo,
+    detailsadm : state.root.adminInfo,
+    detailsstu : state.root.studentInfo,
+    detailstech : state.root.teacherInfo,
     accounttype : state.root.accountType
   })
 }
 function mapDispatchToProp(dispatch) {
   return ({
+    dInfo : (info4)=>{ dispatch(DynamicData(info4))} 
   })
 }
 

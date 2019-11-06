@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.19.0",
     "bootstrap": "^4.3.1",
+    "chart.js": "^2.9.2",
     "firebase": "^7.2.1",
+    "immutability-helper": "^3.0.1",
     "jquery": "^3.4.1",
     "popper.js": "^1.15.0",
     "react": "^16.8.6",
@@ -17,7 +20,8 @@
     "redux": "^4.0.4",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
-    "sweetalert2": "^8.12.1"
+    "sweetalert2": "^8.12.1",
+    "text-ciphers": "^0.5.2"
   },
   "devDependencies": {},
   "scripts": {

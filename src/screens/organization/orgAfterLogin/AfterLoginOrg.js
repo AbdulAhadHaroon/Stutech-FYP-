@@ -7,18 +7,22 @@ import {Button} from '../../../components/button/button.js'
 import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import Swal from 'sweetalert2'
+import {OrganizationDetail , DynamicData , ChatData} from '../../../store/action/action.js';
 import firebase from '../../../config/firebase.js'
 import '../../Loader/loader.css'
 
 // history.pushState(null, null, location.href);
 // window.onpopstate = function () {
-//   swal.filr('done' ,'press Signout button to exit or signout');
-//     history.go(1);
+//   Swal.fire('done' ,'press Signout button to exit or signout');
+//    this.history.go(1);
 // };
 
+// window.onbeforeunload = function(){
+//   return "Message here";
+// }
 
 class orgAfterLogin extends Component {
-
+ 
     constructor(props) {
         super(props);
     
@@ -29,7 +33,25 @@ class orgAfterLogin extends Component {
       }
 
       componentDidMount(){
+        // window.onpopstate = this.onBackButtonEvent;
         this.showMessage();
+        this.validation()
+      }
+
+      // onBackButtonEvent(event) {
+      //   event.preventDefault();
+      //   // this.history.go(1);
+      //   Swal.fire('done' ,'press Signout button to exit or signout');
+      //   }
+
+      validation(){
+        var data = this.props.accounttype;
+       if(data.includes('Organization')){
+        this.props.history.index=0;
+       }else{
+        Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+        this.props.history.push("/");
+       }
       }
 
       showMessage(){
@@ -51,19 +73,19 @@ class orgAfterLogin extends Component {
 
    
 
+     
+      signout(){
 
-//  signout(){
+        firebase.auth().signOut();
+        this.props.organizationInfo({})
+        this.props.chatinfo({});
+        this.props.dInfo({});
+        this.props.history.push('/')
+        Swal.fire('Done' , 'Signout Successfully');
 
-//     firebase.auth().signOut()
-//     .then(function() {
-//       this.props.organizationInfo('none')
-//       this.props.history.push('/')
-//     })
-//     .catch(function(error) {
-//       Swal.fire('Oops' , error , 'error');
-//     });    
-// }
-    
+        
+      }
+          
      
 
       sendMessage(){
@@ -94,6 +116,10 @@ class orgAfterLogin extends Component {
        }
       }
       
+      openMessenger(){
+        this.props.chatinfo({});
+        this.props.history.push('/chatMes')
+      }
       
 
   render() {
@@ -120,12 +146,12 @@ class orgAfterLogin extends Component {
 
 
               <Nav.Link>
-              <Link to='/' > 
-                <figure>
+              
+                <figure  onClick={()=>this.signout()}>
                   <img src={require('../../../images/userimage.png')} style={{width:'30px' , height:'30px' , marginLeft:'10px'}}/>
                   <figcaption style={{color:'white' , fontSize:'13px'}}><b> Signout </b> </figcaption>
                 </figure>
-                </Link>
+             
                 
               </Nav.Link>
             </Navbar.Collapse>
@@ -187,8 +213,8 @@ class orgAfterLogin extends Component {
                 </div>
                 </Link>
                 
-                <Link to='/chatMes'>
-                <div className="smbtn4OAF">
+                
+                <div className="smbtn4OAF" onClick={()=>this.openMessenger()}>
                   <p className="row">
                     <img className="smbtn_img_OAF" src={require('../../../images/mess.jpg')} />
                     <p>
@@ -197,7 +223,7 @@ class orgAfterLogin extends Component {
                   </p>
                   </p> 
                 </div>
-                </Link>
+               
         
               </div>
             
@@ -285,7 +311,9 @@ function mapStateToProp(state) {
 
 function mapDispatchToProp(dispatch) {
   return ({ 
-    // organizationInfo :(info3)=>{ dispatch(OrganizationDetail(info3))} ,
+     organizationInfo :(info3)=>{ dispatch(OrganizationDetail(info3))} ,
+     dInfo : (info4)=>{ dispatch(DynamicData(info4))} ,
+     chatinfo : (info)=>{ dispatch(ChatData(info))}
   })
 }
 

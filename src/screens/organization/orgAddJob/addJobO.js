@@ -8,8 +8,10 @@ import Swal from 'sweetalert2'
 import firebase from '../../../config/firebase.js'
 import {Button} from '../../../components/button/button.js'
 import '../../Loader/loader.css'
+import { OrganizationDetail} from '../../../store/action/action';
 
 import { Navbar} from 'react-bootstrap';
+import { win32 } from 'path';
 
 
 class orgAddJob extends Component {
@@ -28,8 +30,21 @@ class orgAddJob extends Component {
   }
 
  componentDidMount(){
+
+  this.validation();
    this.addData();
  }
+
+  validation(){
+    var data = this.props.accounttype;
+   if(data.includes('Organization')){
+
+   }else{
+    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+    this.props.history.push("/");
+   }
+  }
+
 
  addData(){
   const{myAchievements , progress , myPost}=this.state;
@@ -121,6 +136,7 @@ else{
             cid : data.id ,
             clogo : data.imgURL ,
             cemail : data.email ,
+            cname : data.name ,
             id : skey.key,
             subject : a1 ,
             detail : b1 ,
@@ -130,6 +146,7 @@ else{
             jobType : jobType ,
             category : category
           }
+
           skey.set(jobObj); 
           this.setState({progress:false})
           Swal.fire('Congratulation', 'Your Job Post  Added Successfully')
@@ -138,7 +155,7 @@ else{
 }
 
 delete(id){
-
+const { myPost } = this.state;
 // Swal.fire('Done', 'Data Deleted Successfully')
 
 Swal.fire({
@@ -157,10 +174,9 @@ Swal.fire({
       'Your data has been deleted.',
       'success'
     )
+   window.location.reload()
   }
-})
-
-
+ })
 }
 
   render(){
@@ -189,8 +205,9 @@ Swal.fire({
 
                  {                  
                   myPost.map((val , ind)=>{
+
                         return(
-                           <div  className="viewDivOAJ">
+                           <div id="showdata"  className="viewDivOAJ">
                               <p style={{textAlign:'center'}}> <img style={{width:'120px' , height:'80px'}} src={val.image}/> </p>
                               <hr/>
                               <p className="scrollbar square scrollbar-lady-lips thin"  style={{width:'400px' , fontSize:'12px' , overflowY:'scroll'}} > 
@@ -302,7 +319,7 @@ function mapStateToProp(state) {
 }
 function mapDispatchToProp(dispatch) {
   return ({
-   
+     organizationInfo :(info3)=>{ dispatch(OrganizationDetail(info3))} ,
   })
 }
 

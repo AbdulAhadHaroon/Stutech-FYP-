@@ -49,6 +49,7 @@ import TechViewProfile from './screens/teacher/techViewProfile/ViewProfileT.js'
 import AdminDashboard from './screens/admin/AdminAfterLogin/AdminAfterLogin.js'
 import AdminProfile from './screens/admin/AdminProfile/AdmProfile.js'
 import AdminMessage from './screens/admin/AdminMessage/adminMessage.js'
+import AdminGraph from './screens/admin/AdminGraph/adminGraph.js'
 
 import {BrowserRouter as Router , Switch , Route , Redirect} from 'react-router-dom'; 
 
@@ -103,6 +104,7 @@ class App extends Component {
           <Route exact path="/adminAfterLogin" component={AdminDashboard}/>
           <Route exact path="/adminProfile" component={AdminProfile}/>
           <Route exact path="/adminMessage" component={AdminMessage}/>
+          <Route exact path="/adminGraph" component={AdminGraph}/>
           
           <Route exact path="/404" component={N4}/>
           <Redirect to="/404" />

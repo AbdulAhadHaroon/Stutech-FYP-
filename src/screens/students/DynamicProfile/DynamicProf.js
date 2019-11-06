@@ -141,8 +141,8 @@ class StuDynamicProfile extends Component {
                     <br/>
                     <h6> <b style={{color:'rgb(47, 174, 212)'}}> Academic Information</b> </h6>
                     <p style={{fontSize:'14px'}} >
-                        <b style={{fontSize:'14px' , marginLeft:'10%'}}>Matirculation&nbsp;&nbsp;&nbsp;:</b>{matric}<br/>
-                        <b style={{fontSize:'14px' , marginLeft:'10%'}}>Intermediate&nbsp;&nbsp;&nbsp;&nbsp;:</b>{inter}<br/>
+                        <b style={{fontSize:'14px' , marginLeft:'10%'}}>Matirculation&nbsp;&nbsp;&nbsp;: </b> {matric}<br/>
+                        <b style={{fontSize:'14px' , marginLeft:'10%'}}>Intermediate&nbsp;&nbsp;&nbsp;&nbsp;: </b> {inter}<br/>
                     </p>
 
                     <br/>

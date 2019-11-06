@@ -19,9 +19,9 @@ class AdminAfterLogin extends Component {
     
       addChat(){
         const {chatList} = this.state;
-        chatList.push({name:'Riaz' , Depart:'SE'})
-        chatList.push({name:'Malik' , Depart:'CE'})
-        chatList.push({name:'Huzaifa' , Depart:'IT'})
+        chatList.push({name:'Approved my friend request' , Depart:'SE'})
+        chatList.push({name:'Is thier any course on android app development' , Depart:'CE'})
+        chatList.push({name:'My profile picture not changed' , Depart:'IT'})
         chatList.push({name:'Watan' , Depart:'SE'})
         chatList.push({name:'Kashmir' , Depart:'CE'})
       }
@@ -57,7 +57,7 @@ render(){
             <hr/>
             <Link to="/adminProfile" className="tAibtn"> <img style={{width:'25px' , height:'25px'}}  src={require('../../../images/user.jpg')}/> &nbsp;&nbsp; Profile </Link> 
             <hr/>
-            <Link to="" className="tAibtn"> <img style={{width:'25px' , height:'25px'}}  src={require('../../../images/addjob.png')}/> &nbsp;&nbsp; Report </Link> 
+            <Link to="/adminGraph" className="tAibtn"> <img style={{width:'25px' , height:'25px'}}  src={require('../../../images/addjob.png')}/> &nbsp;&nbsp; Report </Link> 
             <hr/>
             <Link to="" className="tAibtn"> <img style={{width:'25px' , height:'25px'}}  src={require('../../../images/logoff.png')}/> &nbsp;&nbsp; Signout </Link> 
             </div>
@@ -71,7 +71,7 @@ render(){
             <hr/>
             <Link to="/adminProfile" className="tAibtn"> <img style={{width:'25px' , height:'25px'}}  src={require('../../../images/user.jpg')}/></Link> 
             <hr/>
-            <Link to="" className="tAibtn"> <img style={{width:'25px' , height:'25px'}}  src={require('../../../images/addjob.png')}/></Link> 
+            <Link to="/adminGraph" className="tAibtn"> <img style={{width:'25px' , height:'25px'}}  src={require('../../../images/addjob.png')}/></Link> 
             </div>
             
         </div>
@@ -89,7 +89,7 @@ render(){
                         <img  style={{width:'40px' , height:'40px' , marginTop:'10px'}} src={require('../../../images/user.png')}/>
                         <p  style={{marginLeft:'20px' , marginTop:'10px' , fontSize:'15px' }}>
                           <h6 style={{fontSize:'13px' , textAlign:'left'}} >
-                          <b>Name :</b> {val.name}<br/>
+                          <b>Name :</b> Abdul ahad<br/>
                           <b> Roll no :</b> 123 <br/>
                           <b> Department :</b> A <br/>
                           </h6>

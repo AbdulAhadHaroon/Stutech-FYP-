@@ -26,7 +26,18 @@ class studentAfterLogin extends Component {
       }
 
       componentDidMount(){
+         this.validation()
           this.addData();
+      }
+
+      validation(){
+        var data = this.props.accounttype;
+       if(data.includes('Student')){
+        this.props.history.index=0;
+       }else{
+        Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+        this.props.history.push("/");
+       }
       }
 
     addData(){
@@ -99,12 +110,11 @@ class studentAfterLogin extends Component {
         arr1.push({name:'SSUET' , for : 'Software' , type:'intern', Date:'12/7/12' , img:require('../../../images/ssuet.png')})
         arr1.push({name:'Decima' , for : 'Computer Engg' , type:'Seminar' , Date:'12/8/2020' , img:require('../../../images/decima.png')})
 
-        arr2.push({logo:require('../../../images/ssuet.png') , name : 'SSUET' , subject:'AI Seminar held on tuesday. ' , Date:'12-4-2019' })
-        arr2.push({logo:require('../../../images/oracle.png') , name : 'Axiom' , subject:'New Course Launched' , Date:'23-3-2019' })
-        arr2.push({logo:require('../../../images/oracle.png') , name : 'AppBakers' , subject:'Internship Available for SE' , Date:'23-7-2019' })
-        arr2.push({logo:require('../../../images/oracle.png') , name : 'Decima.AI' , subject:'Job Available for Web Development' , Date:'12-6-2019' })
-        arr2.push({logo:require('../../../images/oracle.png') , name : 'MakSoft' , subject:'Seminar on android' , Date:'11-5-2019' })
-    
+        arr2.push({logo:require('../../../images/reminder1.png') , name : 'SSUET' , subject:'AI Seminar held on tuesday. ' , Date:'12-4-2019' })
+        arr2.push({logo:require('../../../images/reminder1.png') , name : 'NIC' , subject:'New Course Launched' , Date:'23-3-2019' })
+        arr2.push({logo:require('../../../images/reminder1.png') , name : 'AppMakers' , subject:'Internship Available for SE' , Date:'23-7-2019' })
+        arr2.push({logo:require('../../../images/reminder1.png') , name : 'Decima' , subject:'Job Available for Web Development' , Date:'12-6-2019' })
+        
     }
 
     Recentjob(){
@@ -146,10 +156,10 @@ class studentAfterLogin extends Component {
                         arr2.map((val , ind)=>{
                         return(
                            <div className="RemindDivAF">
-                              <p style={{textAlign:'center' , fontSize:'12px'}}> <img style={{width:'40px' , height:'40px'}} src={val.logo}/> <b> {val.name}</b> </p>
+                              <p style={{textAlign:'center' , fontSize:'12px'}}> <img style={{width:'40px' , height:'40px'}} src={val.logo}/></p>
                               <hr/>
-                              <p  style={{color:'gray' , fontSize:'11px'}}>  {val.subject} <br/> Date : <b style={{color:'black'}}>{val.Date} </b> </p>
-                              <button className="div4btnAF"> View Details</button>          
+                              <p  style={{color:'black' , fontSize:'13px'}}>  {val.subject} <br/> <b> Venue : {val.name}</b>  <br/> <b> Date : {val.Date} </b> </p>
+                              {/* <button className="div4btnAF"> View Details</button>           */}
                            </div>
                             )
                          })
@@ -327,7 +337,7 @@ class studentAfterLogin extends Component {
 
 function mapStateToProp(state) {
     return ({
-      details: state.root. studentInfo ,
+      details: state.root.studentInfo ,
       accounttype : state.root.accountType
     })
   }

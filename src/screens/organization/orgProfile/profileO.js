@@ -20,7 +20,19 @@ constructor(){
 }
 
   componentDidMount(){
+    this.validation()
     this.getPersonalInfo();
+  }
+
+
+  validation(){
+    var data = this.props.accounttype;
+   if(data.includes('Organization')){
+
+   }else{
+    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+    this.props.history.push("/");
+   }
   }
 
   getPersonalInfo(){
@@ -74,7 +86,6 @@ constructor(){
         firebase.database().ref("Users/"+data.id).update({imgURL:downloadURL});
         this.setState({progress1:false})
         Swal.fire('Done' ,'Profile Image Updated Successfully')
-        this.updatState()
     })
    }
   }
@@ -99,7 +110,7 @@ constructor(){
     else{
       var data = this.props.details;
       firebase.database().ref("Users/"+data.id).update({detail:add});
-      Swal.fire('Done' ,'Done' , 'Detail Updated Successfully')
+      Swal.fire('Done'  , 'Details Updated Successfully')
     }
   }
 
@@ -111,7 +122,7 @@ constructor(){
     else{
       var data = this.props.details;
       firebase.database().ref("Users/"+data.id).update({webLink:add});
-      Swal.fire('Done' ,'Link Updated Successfully')
+      Swal.fire('Done' ,'Link Updated Successfully');
     }
   }
    
@@ -123,7 +134,7 @@ constructor(){
     else{
       var data = this.props.details;
       firebase.database().ref("Users/"+data.id).update({ph_no:add});
-      Swal.fire('Done' ,'Done' ,'Number Updated Successfully')
+      Swal.fire('Done' ,'Number Updated Successfully')
     }
   }
 
@@ -155,7 +166,7 @@ constructor(){
                     document.getElementById('pass2').value=""; 
                     document.getElementById('pass3').value="";
                    
-                    Swal.fire ('Done' ,'Done' , 'Password Updated Successfully');
+                    Swal.fire ('Done' , 'Password Updated Successfully');
                 
                 }).catch(function(err){
                   Swal.fire('Oops' ,''+err , 'error');
@@ -233,7 +244,7 @@ constructor(){
                                       <div className="input-group-text" style={{width:'40px' , height:'30px'}}><img src={require('../../../images/phone.png')} width="15px" height="15px" /></div>
                                     </div>
                                     <input style={{height:'30px' , fontSize:'12px'}} type="number" className="form-control" id="number" placeholder="Contact Number"/>
-                                    <Button text='Update'  type='submit' onClick={()=>this.updateNumber2()} />
+                                    <Button text='Update'   onClick={()=>this.updateNumber2()} />
                                   </div>
                               </div>
                           </div>
@@ -275,7 +286,7 @@ constructor(){
                         <div className="input-group-text" style={{width:'40px' , height:'30px'}}><img src={require('../../../images/pass.png')} width="15px" height="15px" /></div>
                       </div>
                       <input style={{height:'30px' , fontSize:'12px'}} type="password" id="pass3" className="form-control" placeholder="Re-Enter New Password"/>
-                      <Button text='Update'  type='submit' onClick={()=>this.updatePassword2()}/>
+                      <Button text='Update'   onClick={()=>this.updatePassword2()}/>
                     </div>
                 </div>
             </div>
@@ -294,7 +305,7 @@ constructor(){
                         <div className="input-group-text" style={{width:'40px' , height:'30px'}}>W</div>
                       </div>
                       <input style={{height:'30px' , fontSize:'12px'}} type="text" className="form-control" id="webLink" placeholder="Website Link"/>
-                      <Button text='Update'  type='submit'  onClick={()=>this.updateLink()}/>
+                      <Button text='Update'   onClick={()=>this.updateLink()}/>
                     </div>
                 </div>
             </div>
@@ -310,7 +321,7 @@ constructor(){
                         <div className="input-group-text" style={{width:'40px' , height:'30px'}}>A</div>
                       </div>
                       <input style={{height:'30px' , fontSize:'12px'}} type="text" className="form-control" id="address" placeholder="Update Address here !"/>
-                      <Button text='Update'  type='submit' onClick={()=>this.updateAddress1()} />
+                      <Button text='Update'  onClick={()=>this.updateAddress1()} />
                     </div>
                 </div>
             </div>
@@ -324,7 +335,7 @@ constructor(){
                       <div className="input-group-text" style={{width:'40px'}}>D</div>
                     </div>
                     <textarea style={{ fontSize:'12px'}}  type="text" className="form-control" id="detail" placeholder="Details"/>
-                    <Button text='Update'  type='submit' onClick={()=>{this.updateDetail()}} />
+                    <Button text='Update'  onClick={()=>{this.updateDetail()}} />
                   </div>
               </div>
           </div>

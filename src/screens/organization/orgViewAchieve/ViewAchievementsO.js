@@ -30,7 +30,19 @@ class ViewAchievementsO extends Component {
   }
 
 componentDidMount(){
+  this.validation();
   this.addData();
+
+}
+
+validation(){
+  var data = this.props.accounttype;
+ if(data.includes('Organization')){
+
+ }else{
+  Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+  this.props.history.push("/");
+ }
 }
 
 
@@ -50,7 +62,7 @@ componentDidMount(){
       id : AchievementsArr[i].userid ,
       name : AchievementsArr[i].name ,
       email : AchievementsArr[i].email ,
-      image : AchievementsArr[i].image
+      image : AchievementsArr[i].myimg
     }
     this.props.dInfo(obj)
     this.props.history.push("/stuDynamicProfile")
@@ -87,7 +99,8 @@ componentDidMount(){
         rollNo : rdata.rollNo ,
         email : rdata.email ,
         userid : rdata.userID ,
-        name : rdata.userName 
+        name : rdata.userName ,
+        myimg : rdata.myimg 
         }
         console.log(special , certificate)
        if((special=='all' || rdata.speciality.includes(special)) && (certificate=='all' || rdata.certificateType.includes(certificate))){  
@@ -130,7 +143,8 @@ componentDidMount(){
           rollNo : rdata.rollNo ,
           email : rdata.email ,
           userid : rdata.userID ,
-          name : rdata.userName 
+          name : rdata.userName ,
+          myimg : rdata.myimg 
           }
          AchievementsArr.push(obj);
          this.setState({AchievementsArr})
@@ -257,6 +271,8 @@ componentDidMount(){
 
 function mapStateToProp(state) {
   return ({
+    details: state.root.organizationInfo ,
+    accounttype : state.root.accountType
   })
 }
 

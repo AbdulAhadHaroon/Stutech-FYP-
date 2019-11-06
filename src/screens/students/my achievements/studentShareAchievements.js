@@ -152,7 +152,8 @@ class studentShareAchivement extends Component {
                 certificateType : type , 
                 speciality : special ,
                 image :  downloadURL ,
-                userName : data.name
+                userName : data.name ,
+                myimg : data.imgURL
               }
               skey.set(certificateObj); 
 
