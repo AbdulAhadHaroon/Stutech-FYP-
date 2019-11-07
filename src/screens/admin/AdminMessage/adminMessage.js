@@ -3,8 +3,10 @@ import '../../../css/bootstrap.min.css';
 import './adminMessage.css';
 import { Button } from '../../../components/button/button.js'
 import { Navbar, Nav, NavDropdown, Form, FormControl } from 'react-bootstrap';
+import firebase from '../../../config/firebase.js'
 import $ from "jquery";
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
 
 
@@ -22,6 +24,7 @@ class AdmMsg extends Component {
       to: 'abdulahad30396@gmail.com',
       subject : 'hello message' ,
       message : 'asdasda' ,
+      notificationTo : 'Organization'
     }
   }
 
@@ -37,30 +40,30 @@ class AdmMsg extends Component {
     document.getElementById('amsg').style.display = 'none';
   }
 
-  selected2 = (event) => {
-    // var accType=""+sel.options[sel.selectedIndex].value;
-    var s2 = event.target.value;
-    console.log(event.target.value)
+  // selected2 = (event) => {
+  //   // var accType=""+sel.options[sel.selectedIndex].value;
+  //   var s2 = event.target.value;
+  //   console.log(event.target.value)
 
-    if (s2 == "student") {
-      document.getElementById('select3').style.display = 'block';
-      document.getElementById('select5').style.display = 'block';
-      document.getElementById('select4').style.display = 'none';
-    }
+  //   if (s2 == "student") {
+  //     document.getElementById('select3').style.display = 'block';
+  //     document.getElementById('select5').style.display = 'block';
+  //     document.getElementById('select4').style.display = 'none';
+  //   }
 
-    else if (s2 == "teacher") {
-      document.getElementById('select3').style.display = 'block';
-      document.getElementById('select4').style.display = 'none';
-      document.getElementById('select5').style.display = 'none';
-    }
+  //   else if (s2 == "teacher") {
+  //     document.getElementById('select3').style.display = 'block';
+  //     document.getElementById('select4').style.display = 'none';
+  //     document.getElementById('select5').style.display = 'none';
+  //   }
 
-    else if (s2 == "organization") {
-      document.getElementById('select4').style.display = 'block';
-      document.getElementById('select3').style.display = 'none';
-      document.getElementById('select5').style.display = 'none';
-    }
+  //   else if (s2 == "organization") {
+  //     document.getElementById('select4').style.display = 'block';
+  //     document.getElementById('select3').style.display = 'none';
+  //     document.getElementById('select5').style.display = 'none';
+  //   }
 
-  }
+  // }
 
   selected22 = (event) => {
     // var accType=""+sel.options[sel.selectedIndex].value;
@@ -92,7 +95,7 @@ class AdmMsg extends Component {
     xhr.addEventListener('load', () => {
       console.log(xhr.responseText)
     })
-    xhr.open('GET', 'http://smartsms.pk/json?api_token= 6ee650fde65d4b1a8136875e0190358ecb634db168688b66305b2d88ffda&api_secret=shahjahan123&to=923032286816&from=Brand&date=07-11-2019&time=13:35:00&message=this+is+json+api')
+    xhr.open('GET', 'http://smartsms.pk/json?api_token= 6ee650fde65d4b1a8136875e0190358ecb634db168688b66305b2d88ffda&api_secret=shahjahan123&to=923032286816&from=Brand&date=07-11-2019&time=18:05:00&message=this+is+json+api')
     xhr.send()
   }
 
@@ -126,8 +129,31 @@ class AdmMsg extends Component {
   // xhr.send();
   // }
 
+  sendNotification(){
+  const {notificationTo} = this.state;
+  var d = new Date();
+  var m =  d.getDate() + '-' +d.getMonth() + '-' + d.getFullYear()
+ 
+  var msg = document.getElementById('notidata').value;
+
+  if(msg.length<5){
+   Swal.fire("Oops" , "Write Your message Correctly", "error")
+  }else{
+   var skey = firebase.database().ref('Notification').push();
+   var obj ={
+     id:skey.key ,
+     to:notificationTo ,
+     message : msg ,
+     date : m 
+   }
+   skey.set(obj)
+   Swal.fire("Oops" , "Your Notification has been Send ")
+  }
+}
+
+
   render() {
-    const { nfdiv1, nfdiv2, nfdiv3 , from , to , subject , message} = this.state;
+    const { nfdiv1, nfdiv2, nfdiv3 , from , to , subject , message , notificationTo} = this.state;
     return (
       <div>
 
@@ -152,53 +178,25 @@ class AdmMsg extends Component {
 
           <div className="col-md-5" style={{ minWidth: '400px', border: 'solid 1px rgb(20, 194, 224)', margin: '10px auto', padding: '10px' }}>
 
-            {/* <input id="cipher"    />
-            <p>asad</p> */}
-
-            <div class="contact">
-              <h3>Send Email</h3>
-              {/* {{msg}} */}
-              <form onSubmit={(e) => this.handleUpload(e)} >
-                <p>
-                  <label>From</label>
-                  <input type="text" onChange={(e)=>this.setState({ from : e.target.value})} />
-                </p>
-                <p>
-                  <label>To</label>
-                  <input type="text" onChange={(e)=>this.setState({ to : e.target.value})} />
-                </p>
-                <p>
-                  <label>Subject</label>
-                  <input type="email" onChange={(e)=>this.setState({ subject : e.target.value})} />
-                </p>
-                <p>
-                  <label>Message</label>
-                  <input type="text" onChange={(e)=>this.setState({ message : e.target.value})} />
-                </p>
-                <p class="full">
-                  <input type="submit" value="submit" />
-                </p>
-              </form>
-            </div>
-
-
-
-
-
-
-
-
             <br />
-            <h6 className="text-center" style={{ color: 'rgb(20, 194, 224)' }}><b> Messages </b> </h6>
+            <h6 className="text-center" style={{ color: 'rgb(20, 194, 224)' }}><b> Send Notification </b> </h6>
 
             <div className="form-group mx-1" id="select1">
-              <label style={{ fontSize: '12px' }} >VIEW MESSAGE</label>
-              <select style={{ fontSize: '12px' }} className="form-control" onChange={this.selectedAccountType} >
-                <option style={{ fontSize: '12px' }} value="teacher">Organization</option>
-                <option style={{ fontSize: '12px' }} value="teacher">Teacher</option>
-                <option style={{ fontSize: '12px' }} value="teacher">Students</option>
+              <label style={{ fontSize: '12px' }} >To</label>
+              <select style={{ fontSize: '12px' }} className="form-control" onChange={(e)=>this.setState({notificationTo : e.target.value})} >
+                <option style={{ fontSize: '12px' }} value="Organization">Organization</option>
+                <option style={{ fontSize: '12px' }} value="Teacher">Teacher</option>
+                <option style={{ fontSize: '12px' }} value="Student">Students</option>
               </select>
             </div>
+
+               <p>
+                  <label>Message</label>
+                  <input type="text" className="form-control" id="notidata" />
+                </p>
+            
+            <Button  text="Send" onClick={()=>this.sendNotification()} />
+
           </div>
         </div>
         }
@@ -221,7 +219,7 @@ class AdmMsg extends Component {
                 </select>
               </div>
 
-              <div className="form-group mx-1" id="select3" style={{ display: 'none' }}>
+              {/* <div className="form-group mx-1" id="select3" style={{ display: 'none' }}>
                 <label style={{ fontSize: '12px' }} >Department</label>
                 <select style={{ fontSize: '12px' }} className="form-control" onChange={this.selected3} >
                   <option style={{ fontSize: '12px' }} value="student">Software Engineering</option>
@@ -240,7 +238,7 @@ class AdmMsg extends Component {
                   <option style={{ fontSize: '12px' }} value="teacher">Networking</option>
                   <option style={{ fontSize: '12px' }} value="teacher">Other</option>
                 </select>
-              </div>
+              </div> */}
 
               <div className="form-group mx-1" id="select5" style={{ display: 'none' }}>
                 <label style={{ fontSize: '12px' }} >Section</label>
@@ -256,27 +254,64 @@ class AdmMsg extends Component {
               </div>
               <br />
 
-              <div style={{ border: 'solid 1px black', margin: '10px', padding: '10px' }}>
+              {/* <div style={{ border: 'solid 1px black', margin: '10px', padding: '10px' }}>
                 <p className="text-center"> <b>  Email </b> </p>
                 <hr />
                 <input style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" placeholder="Subject" />
                 <br />
                 <textarea style={{ fontSize: '12px' }} type="text" className="form-control" placeholder="Message" />
                 <Button text='send' type='Send' />
-              </div>
+              </div> */}
 
             </div>
 
             <div id='semail' style={{ border: 'solid 1px black', margin: '10px', padding: '10px', display: 'none' }}>
               <p className="text-center"> <b>  Send Specific Email </b> </p>
               <hr />
-              <input style={{ height: '30px', fontSize: '12px' }} type="email" className="form-control" placeholder="Email Address" />
-              <br />
-              <input style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" placeholder="Subject" />
-              <br />
-              <textarea style={{ fontSize: '12px' }} type="text" className="form-control" placeholder="Message" />
-              <Button text='Send' type='Send' />
+              <form onSubmit={(e) => this.handleUpload(e)} >
+                <p>
+                  <label>To</label>
+                  <input style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" onChange={(e)=>this.setState({ to : e.target.value})} />
+                </p>
+                <p>
+                  <label>Subject</label>
+                  <input  style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" onChange={(e)=>this.setState({ subject : e.target.value})} />
+                </p>
+                <p>
+                  <label>Message</label>
+                  <input style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" onChange={(e)=>this.setState({ message : e.target.value})} />
+                </p>
+                <p class="full">
+                  <input style={{ height: '30px', fontSize: '12px' }} type="Submit" className="btn btn-success" value="submit" />
+                </p>
+              </form>
             </div>
+
+          
+              {/* {{msg}} */}
+              <div id="aemail"  style={{ border: 'solid 1px black', margin: '10px', padding: '10px' }}>
+              <form onSubmit={(e) => this.handleUpload(e)} >
+                {/* <p>
+                  <label>From</label>
+                  <input style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" onChange={(e)=>this.setState({ from : e.target.value})} />
+                </p>
+                <p>
+                  <label>To</label>
+                  <input style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" onChange={(e)=>this.setState({ to : e.target.value})} />
+                </p> */}
+                <p>
+                  <label>Subject</label>
+                  <input  style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" onChange={(e)=>this.setState({ subject : e.target.value})} />
+                </p>
+                <p>
+                  <label>Message</label>
+                  <input style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" onChange={(e)=>this.setState({ message : e.target.value})} />
+                </p>
+                <p class="full">
+                  <input style={{ height: '30px', fontSize: '12px' }} type="Submit" className="btn btn-success" value="submit" />
+                </p>
+              </form>
+              </div>
 
           </div>
         }

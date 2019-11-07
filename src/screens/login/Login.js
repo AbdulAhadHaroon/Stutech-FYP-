@@ -37,7 +37,7 @@ class Login extends Component {
 
   getQuestion(){
   const { femail , fques , fans , fpass } = this.state;
-  var  email = document.getElementById('secemail').value;
+  var  email = document.getElementById('secemail').value.toLowerCase();
     if(email.length<4){
       Swal.fire('Oops' , 'Enter Correct Email Address' , 'error')
     }else{
@@ -209,6 +209,9 @@ class Login extends Component {
       {
         this.setState({progress:false})
         Swal.fire('Oops' , 'Your Account is not Approved By admin ' , 'error')
+      }else{
+        this.setState({progress:false})
+        Swal.fire('Oops' , 'Something Went Wrong ' , 'error')
       }
 
       })
