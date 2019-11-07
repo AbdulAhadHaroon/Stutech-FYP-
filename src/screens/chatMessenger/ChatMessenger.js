@@ -120,6 +120,12 @@ class ChatMessenger extends Component {
         image : chatdata.image 
       }
      
+      var oo  = {
+        name : chatdata.name ,
+        id: chatdata.id ,
+        email : chatdata.email ,
+        image : chatdata.image 
+      }
 
     var skey =  firebase.database().ref(`chatList/${myid}/${chatdata.id}`);
     skey.set(obj)
