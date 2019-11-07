@@ -222,7 +222,7 @@ Swal.fire({
                               <hr/>
                               <p  style={{width:'500px'}} > 
                                <p style={{textAlign:'center'}}><b> "{val.subject}"  </b></p><br/>
-                              <b> Completion Date: </b> {val.CompletionDate} <br/>
+                              {/* <b> Completion Date: </b> {val.CompletionDate} <br/> */}
                               <b> Organization Name : </b>  {val.orgName} <br/>
                               <b> Organization Web : </b> {val.orgLink} <br/>  
                               <b> Certification Details : </b> {val.cerDetails} <br/> 

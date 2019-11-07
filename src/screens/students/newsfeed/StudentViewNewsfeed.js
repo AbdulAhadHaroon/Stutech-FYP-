@@ -366,7 +366,7 @@ addFav(i){
                                 <div style={{margin:'10px auto'}}>   
                                 <p style={{fontSize:'13px'}}> 
                                   <b> Last Date : </b> {val.date} <br/> 
-                                  {/* <b> Web Link : </b> {val.websiteLink} <br/> */}
+                                  <b> Category : </b> {val.category} <br/>
                                   <b>Post Type : </b> {val.type} <br/>
                                   <b> Work Experience : </b> {val.experience}   
                                 </p>

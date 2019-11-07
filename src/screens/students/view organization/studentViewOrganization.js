@@ -43,7 +43,8 @@ class StuViewOrg extends Component {
               logo : data.imgURL ,
               type : data.orgType ,
               number : data.ph_no ,
-              websiteLink : data.webLink
+              websiteLink : data.webLink ,
+              detail : data.detail
              }
              myOrganization.push(orgObj)
              this.setState({myOrganization})
@@ -62,7 +63,8 @@ class StuViewOrg extends Component {
               logo : data.imgURL ,
               type : data.orgType ,
               number : data.ph_no ,
-              websiteLink : data.webLink
+              websiteLink : data.webLink ,
+              detail : data.detail
              }
              myOrganization.push(orgObj)
              this.setState({myOrganization})
@@ -156,7 +158,7 @@ class StuViewOrg extends Component {
 
                                  <p style={{textAlign:'left' , fontSize:'12px'}}> <b> Description :  </b> </p>
                                  <p className="scrollbar square scrollbar-lady-lips thin" style={{fontSize:'12px' ,textAlign:'center' , padding:'10px' , height:'200px' , overflowY:'scroll'}}>
-                                  {myOrganization[dataIndex].description} 
+                                  {myOrganization[dataIndex].detail} 
                                  </p>
 
                             </div> 
