@@ -7,7 +7,9 @@ import firebase from '../../config/firebase.js'
 import '../Loader/loader.css'
 import {Link} from 'react-router-dom';
 import {Button} from '../../components/button/button.js'
+import Modal from 'react-responsive-modal';
 import {StudentDetail , TeacherDetail , AdminDetail , OrganizationDetail} from '../../store/action/action';
+import axios from 'axios'
 
 
 class Login extends Component {
@@ -15,10 +17,70 @@ class Login extends Component {
  constructor(){
    super()
    this.state={
-    progress : false 
+    progress : false ,
+    open: false,
+    femail:'' ,
+    fques : '' ,
+    fans : '' ,
+    fpass : ''
    }
-
   this.getDetail = this.getDetail.bind(this);
+ }
+
+ onOpenModal() {
+  this.setState({ open: true });
+  };
+
+ onCloseModal = () => {
+  this.setState({ open: false });
+  };
+
+  getQuestion(){
+  const { femail , fques , fans , fpass } = this.state;
+  var  email = document.getElementById('secemail').value;
+    if(email.length<4){
+      Swal.fire('Oops' , 'Enter Correct Email Address' , 'error')
+    }else{
+      firebase.database().ref("/Users").orderByChild("email").equalTo(""+email).on("value", (snapshot)=> {
+        if(snapshot.exists()){
+        snapshot.forEach((childSnapshot)=> {
+         var data = childSnapshot.val();
+         console.log(data)
+         document.getElementById('secques').innerHTML=data.secQuestion;
+         this.setState({
+           femail : data.email ,
+           fques : data.secQuestion ,
+           fans : data.secAns ,
+           fpass : data.pass
+         })
+        })
+      }
+        else{
+          Swal.fire('Oops...', 'The email is not found in database', 'error')
+        }
+      })
+    }
+  }
+
+ getAnswer(){
+  const { femail , fques , fans , fpass } = this.state;
+  var from = "admin@stutech.com"
+  var to = ""+femail;
+  var subject = "Forget Password Request!"
+  var message = "Your Stutech Account Password is :"+fpass;
+  var ans = document.getElementById('secans').value;
+   console.log(ans , fans )
+  if(fans.toLowerCase()==ans.toLowerCase()){
+    axios.post('http://localhost:5000/send', {
+      from , to , subject , message
+    }).then((res) => {
+      console.log(res.statusText);
+      Swal.fire('Done' , 'Your Paasword has been sent to your email' )
+    });
+  }
+  else{
+    Swal.fire('Oops' , 'Your Answer was incorrect' , 'error')
+  }
 
  }
 
@@ -52,7 +114,7 @@ class Login extends Component {
       }
 
   getDetail(){
-    const {progress} = this.state ;
+    const {progress , } = this.state ;
     var  loginemail = document.getElementById('email').value.toLowerCase();
 
      firebase.database().ref("/Users").orderByChild("email").equalTo(""+loginemail).on("value", (snapshot)=> {
@@ -60,7 +122,10 @@ class Login extends Component {
         
         var accType = childSnapshot.val().accountType;
         var data = childSnapshot.val();
+        console.log('data' , data)
 
+        if(data.accountStatus=='Approved')
+        {
         if(accType=='Student'){
 
            var stuObj = {
@@ -135,6 +200,16 @@ class Login extends Component {
              this.props.history.push("/orgAfterLogin");
 
          }
+      } else if (data.accountStatus=='Block')
+      {
+        this.setState({progress:false})
+        Swal.fire('Oops' , 'Your Account has been Blocked' , 'error')
+      }
+      else if (data.accountStatus=='Not Approved')
+      {
+        this.setState({progress:false})
+        Swal.fire('Oops' , 'Your Account is not Approved By admin ' , 'error')
+      }
 
       })
     })
@@ -142,9 +217,28 @@ class Login extends Component {
 
   
  render(){
-   const {progress} = this.state;
+   const {progress , open , fques , femail , fans} = this.state;
   return(   
     <div className="row">
+
+      <Modal open={open} onClose={this.onCloseModal} center>
+          <div  style={{borderRadius:'10px' , padding:'20px'}}>
+          <h4 style={{color:'rgb(20, 194, 224)' , textAlign:'center'}} > <b> Forgot Password </b> </h4>
+          <p style={{textAlign:'center'}}>  <b>" After Entering an Email Address , User Should Provide the Answer of Security Question in order to get Password on Provided Email Address."  </b> </p>
+          <hr/>
+           
+        
+           <input className="form-control" style={{marginBottom:'5px'}} id="secemail"  placeholder="Write Your Email Address Here" />
+           <p style={{textAlign:'center'}}> <Button  style={{margin:'2px auto'}} type="submit" text="Submit" onClick={()=>this.getQuestion()} /> </p>
+          
+           <hr/>
+           <p id="secques" className="form-control"> </p>
+           <input className="form-control" style={{marginBottom:'5px'}} id="secans" placeholder="Write Your Answer Here" />
+           
+            <Button  style={{margin:'2px auto'}} type="submit" text="Submit" onClick={()=>this.getAnswer()} />
+          </div>
+        </Modal>
+
               
               <div className="col-md" style={{ paddingTop:'200px' , backgroundColor:'rgb(20, 194, 224)' , height:'100vh'}} >
 
@@ -194,6 +288,7 @@ class Login extends Component {
                   <div align="center"><Link to="/orgAfterLogin">  <Button text='Org Login'  type='submit' onClick={() =>Swal.fire('Congratulations!','You Logged in Sucessfully !')}/> </Link> </div>
                         <br />
                   <div align="center">Don't have an account ? <a> <Link to="/signup1"> Create Accout </Link></a> </div>
+                  <div align="center"> <a style={{color:'rgb(47, 143, 233)'}} onClick={()=>this.onOpenModal()}>  Forget Password </a> </div>
           
               </div>  
                 
@@ -203,6 +298,7 @@ class Login extends Component {
 
 function mapStateToProp(state) {
   return ({
+    http_request: state.root.emailLink 
   })
 }
 

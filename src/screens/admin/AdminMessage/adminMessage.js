@@ -3,6 +3,7 @@ import '../../../css/bootstrap.min.css';
 import './adminMessage.css';
 import { Button } from '../../../components/button/button.js'
 import { Navbar, Nav, NavDropdown, Form, FormControl } from 'react-bootstrap';
+import $ from "jquery";
 import axios from 'axios'
 
 
@@ -86,15 +87,27 @@ class AdmMsg extends Component {
 
   }
 
-  //  handleUpload(){
-  //   var xhr = new XMLHttpRequest()
-  //   xhr.addEventListener('load', () => {
-  //     console.log(xhr.responseText)
-  //   })
-  //   xhr.open('GET', 'http://smartsms.pk/plain?api_token=6ee650fde65d4b1a8136875e0190358ecb634db168688b66305b2d88ffda&api_secret=shahjahan123&to=923022787260&message=hello+shahjahan')
-  //   xhr.send()
-  // }
+   handleSms(){
+    var xhr = new XMLHttpRequest()
+    xhr.addEventListener('load', () => {
+      console.log(xhr.responseText)
+    })
+    xhr.open('GET', 'http://smartsms.pk/json?api_token= 6ee650fde65d4b1a8136875e0190358ecb634db168688b66305b2d88ffda&api_secret=shahjahan123&to=923032286816&from=Brand&date=07-11-2019&time=13:35:00&message=this+is+json+api')
+    xhr.send()
+  }
 
+//   handleSms(){
+//   $.ajax({
+//     url: '',
+//     headers: {  'Access-Control-Allow-Origin': 'http://smartsms.pk/json?api_token= 6ee650fde65d4b1a8136875e0190358ecb634db168688b66305b2d88ffda&api_secret=shahjahan123&to=923032286816&from=Brand&date=07-11-2019&time=13:35:00&message=this+is+json+api' },
+//     data: data,
+//     type: 'dataType',
+//     /* etc */
+//     success: function(jsondata){
+//       console.log(jsondata)
+//     }
+//  })
+// }
 
   handleUpload(e) {
     console.log('done')
@@ -133,6 +146,7 @@ class AdmMsg extends Component {
           </div>
         </div>
 
+        <button onClick={()=>this.handleSms()} > send sms </button>
 
         {nfdiv1 && <div className="col-md row" id='div2' style={{ backgroundColor: 'whitesmoke', paddingTop: '20px', margin: '30px auto !important' }} >
 

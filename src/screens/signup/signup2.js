@@ -15,6 +15,7 @@ class Signup2 extends Component {
     super(props);
     this.state = {
       accType : 'student' ,
+      secQues : 'Favourite Teacher Name' ,
       sDepart : '' ,
       tDepart : '' ,
       progress : false 
@@ -46,13 +47,13 @@ class Signup2 extends Component {
   }
 
   selectTDepart = (event) => { 
-    const { tDepart } = this.state;
+    const { tDepart , oType } = this.state;
     this.setState({tDepart : event.target.value})
     } 
 
 
   CreateAccount(){
-    const {accType  , tDepart , sDepart , progress} = this.state;
+    const {accType  , tDepart , sDepart , progress , secQues} = this.state;
     
     if(accType == "student"){
 
@@ -60,7 +61,10 @@ class Signup2 extends Component {
         var sec = document.getElementById('section').value.toUpperCase();;
         var Sdob = document.getElementById('SDOB').value;
         var file = document.getElementById('image').files[0]
+        var secAns = document.getElementById('secans').value;
         var batch = document.getElementById('batch').value;
+        var enrollNo = document.getElementById('enroll').value;
+        var ques = document.getElementById('secques').value;
         
         
         if(file == undefined){
@@ -82,6 +86,15 @@ class Signup2 extends Component {
         else if(batch.length<4 || batch.length>4){
           Swal.fire('Oops...', 'Please Write Your Batch Correctly', 'error')
         }
+         else if(secAns.length<2){
+          Swal.fire('Oops...', 'Please Write Correct Security Answer', 'error')
+         }
+         else if(enrollNo.length<6){
+          Swal.fire('Oops...', 'Please Write Enroll Number Correctly', 'error')
+         }
+         else if(ques.length<6){
+          Swal.fire('Oops...', 'Please Write Your Security Question Completely', 'error')
+         }
         else{
           this.setState({progress:true})
 
@@ -92,6 +105,15 @@ class Signup2 extends Component {
           var ph_no = data.number;
           var pass = data.pass1;
           var gender = data.gender.toLowerCase();
+
+          firebase.database().ref("/Users").orderByChild("rollNo").equalTo(""+rno).on("value", (snapshot)=> {
+
+            if(snapshot.exists()){
+             Swal.fire('Oops' , 'Account Already Exist with this Roll No' , 'error')
+             this.setState({progress:false})
+            }
+
+            else{
 
           firebase.auth().createUserWithEmailAndPassword(email, pass).then((success)=>{
             // varible to create refrence of firebase storage
@@ -116,9 +138,13 @@ class Signup2 extends Component {
                 rollNo : rno ,
                 section : sec , 
                 DOB : Sdob ,
+                enrollNo : enrollNo ,
                 accountType : "Student" ,
                 imgURL : downloadURL,
                 department : sDepart ,
+                secQuestion : ques ,
+                accountStatus : 'Not Approved' ,
+                secAns : secAns ,
                 batch : batch 
               }
         
@@ -139,8 +165,10 @@ class Signup2 extends Component {
            }).catch((error)=> {
             this.setState({progress:false})
             Swal.fire('Oops...', ''+error.message, 'error')
-        });
-      }
+        })
+       }
+      })
+     }
     }
 
     else if(accType == "teacher"){
@@ -148,10 +176,12 @@ class Signup2 extends Component {
       var desig = document.getElementById('designation').value;
       var Tdob = document.getElementById('TDOB').value;
       var file = document.getElementById('image').files[0]
+      var secAns = document.getElementById('secans').value;
+      var ques = document.getElementById('secques').value;
 
       var data = this.props.details;
       var name = data.fname + data.lname;
-      var email = data.email;
+      var email = data.email.toLowerCase();
       var ph_no = data.number;
       var pass = data.pass1;
       var gender = data.gender;
@@ -171,6 +201,12 @@ class Signup2 extends Component {
       else if(tDepart.length<1){
         Swal.fire('Oops...', 'Please ! Select Your Department', 'error')
       }
+      else if(ques.length<6){
+        Swal.fire('Oops...', 'Please Write Your Security Question Completely', 'error')
+       } else if(secAns.length<2){
+        Swal.fire('Oops...', 'Please Write Correct Security Answer', 'error')
+       }
+       
       else{
 
         this.setState({progress:true})  
@@ -200,7 +236,10 @@ class Signup2 extends Component {
             DOB : Tdob ,
             accountType : "Teacher" ,
             imgURL : downloadURL,
-            department : tDepart
+            department : tDepart ,
+            secQuestion : ques ,
+            accountStatus : 'Not Approved' ,
+            secAns : secAns ,
           }
     
           skey.set(teacherObj); 
@@ -227,10 +266,10 @@ class Signup2 extends Component {
 
   
  render(){
-   const {progress} = this.state;
+   const {progress , secQues} = this.state;
   return(
    <div>
-      <div className="row" style={{height:'100vh'}}>
+      <div className="row" style={{height:'130vh'}}>
               
           <div className="col-md" style={{ paddingTop:'200px' , backgroundColor:'rgb(20, 194, 224)'}} >
           <div style={{textAlign:'center'}}> <img style={{width:'320px' , height:'280px'}} src={require('../../images/stutech_logo_new.png')} /> </div>
@@ -287,6 +326,19 @@ class Signup2 extends Component {
                                     </div>
                                 </div>
                             </div>
+
+                            <br />
+        
+                      <div className="form-row align-items-center" >
+                          <div className="col-12">
+                              <div className="input-group mb-2">
+                                <div className="input-group-prepend">
+                                  <div className="input-group-text" style={{width:'40px' , height:'30px'}}>E</div>
+                                </div>
+                                <input style={{fontSize:'12px' , height:'30px'}} type="text" className="form-control" id="enroll" placeholder="Enrolment No"/>
+                              </div>
+                          </div>
+                      </div>
         
                             <br />
 
@@ -385,8 +437,42 @@ class Signup2 extends Component {
                            </div>
         
                         </div>
-
+                        
                      <br />
+
+                     {/* <div className="form-group mx-1">
+                        <label style={{fontSize:'12px'}} >Security Question</label>
+                        <select style={{fontSize:'12px'}}  className="form-control" onChange={(e)=>this.setState({secQues : e.target.value})}>
+                          <option style={{fontSize:'12px'}}  value="Favourite Teacher Name">Favourite Teacher Name</option>
+                          <option style={{fontSize:'12px'}}  value="What is your oldest cousin's first and last name">What is your oldest cousin's first and last name</option>
+                          <option style={{fontSize:'12px'}}  value="What was your favorite place to visit as a child?">What was your favorite place to visit as a child?</option>
+                        </select>
+                </div> */}
+
+            <div className="form-row align-items-center mx-1" >
+                    <div className="col-12">
+                        <div className="input-group mb-2">
+                          <div className="input-group-prepend">
+                            <div className="input-group-text" style={{width:'40px' ,height:'30px'}}>Q</div>
+                          </div>
+                          <input style={{fontSize:'12px' , height:'30px'}}  type="text" className="form-control" id="secques" placeholder="Security Question"/>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div className="form-row align-items-center mx-1" >
+                    <div className="col-12">
+                        <div className="input-group mb-2">
+                          <div className="input-group-prepend">
+                            <div className="input-group-text" style={{width:'40px' ,height:'30px'}}>A</div>
+                          </div>
+                          <input style={{fontSize:'12px' , height:'30px'}}  type="text" className="form-control" id="secans" placeholder="Security answer"/>
+                        </div>
+                    </div>
+                </div>
+
         
                     {!progress && <div align="center"><Button text='Submit'  type='submit' onClick={() =>{this.CreateAccount()}}/></div>}
         

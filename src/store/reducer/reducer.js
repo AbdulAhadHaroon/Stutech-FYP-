@@ -1,5 +1,6 @@
 // Object and Variables Who stored  and Provide Values in all Over Application 
 const INITIAL_STATE = {
+    emailLink : 'http://localhost:5000/send' ,
     accountType : '' ,
     signupInfo : {} ,
     studentInfo :{} ,

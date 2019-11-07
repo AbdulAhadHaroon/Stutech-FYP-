@@ -15,19 +15,20 @@ constructor(){
   super();
   
   this.state={
-   oType:'' ,
+   oType:'softwarehouse' ,
+   secQues : 'Favourite Teacher Name' ,
    progress : false 
   }
 
 }
 
 selectedType = (event) => { 
-  const { oType } = this.state;
+  const { oType  } = this.state;
   this.setState({oType : event.target.value})
   }
         
   createAccount(){
-  const {oType , progress} = this.state;
+  const {oType , progress , secQues} = this.state;
 
         var name = document.getElementById('name').value;
         var email = document.getElementById('email').value;
@@ -36,6 +37,7 @@ selectedType = (event) => {
         var ph_no = document.getElementById('number').value;
         var address = document.getElementById('address').value;
         var webLink = document.getElementById('weblink').value;
+        var secAns = document.getElementById('secans').value;
         var file = document.getElementById('file').files[0]
         
         
@@ -59,6 +61,9 @@ selectedType = (event) => {
          }
          else if(webLink.length<6){
           Swal.fire('Oops...', 'Please Enter Valid Website Link', 'error')
+         }
+         else if(secAns.length<2){
+          Swal.fire('Oops...', 'Please Enter Security Answer Correctly', 'error')
          }
          else if(file==undefined){
           Swal.fire('Oops...', 'Please Select Your Profile Picture', 'error')
@@ -88,12 +93,15 @@ selectedType = (event) => {
               var orgObj = {
                 id : skey.key,
                 name : name ,
-                email : email,
+                email : email.toLowerCase(),
                 ph_no : ph_no ,
                 accountType : "Organization" ,
                 orgType : oType ,
                 address : address ,
                 webLink : webLink ,
+                secQuestion : secQues ,
+                secAns : secAns ,
+                accountStatus : 'Not Approved' ,
                 imgURL : downloadURL,
                 
               }
@@ -128,7 +136,7 @@ selectedType = (event) => {
 
   
  render(){
-   const {progress} = this.state;
+   const {progress , secQues} = this.state;
   return(
    <div>
       <div className="row">
@@ -262,6 +270,26 @@ selectedType = (event) => {
                           <option style={{fontSize:'12px'}}  value="networking">Networking</option>
                           <option style={{fontSize:'12px'}}  value="other">Other</option>
                         </select>
+                </div>
+
+                <div className="form-group mx-1">
+                        <label style={{fontSize:'12px'}} >Security Question</label>
+                        <select style={{fontSize:'12px'}}  className="form-control" onChange={(e)=>this.setState({secQues : e.target.value})}>
+                          <option style={{fontSize:'12px'}}  value="Favourite Teacher Name">Favourite Teacher Name</option>
+                          <option style={{fontSize:'12px'}}  value="What is your oldest cousin's first and last name">What is your oldest cousin's first and last name</option>
+                          <option style={{fontSize:'12px'}}  value="What was your favorite place to visit as a child?">What was your favorite place to visit as a child?</option>
+                        </select>
+                </div>
+
+                <div className="form-row align-items-center mx-1" >
+                    <div className="col-12">
+                        <div className="input-group mb-2">
+                          <div className="input-group-prepend">
+                            <div className="input-group-text" style={{width:'40px' ,height:'30px'}}>A</div>
+                          </div>
+                          <input style={{fontSize:'12px' , height:'30px'}}  type="text" className="form-control" id="secans" placeholder="Security answer"/>
+                        </div>
+                    </div>
                 </div>
 
 
