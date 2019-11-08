@@ -168,11 +168,11 @@ class AdmMsg extends Component {
           <div className="row navbarAM"  >
             <p className="navitemAM" onClick={() => { this.setState({ nfdiv1: true, nfdiv2: false, nfdiv3: false, nfdiv4: false }) }} >VIEW_MESSAGE</p>
             <p className="navitemAM" onClick={() => { this.setState({ nfdiv1: false, nfdiv2: true, nfdiv3: false, nfdiv4: false }) }}>SEND_EMAIL</p>
-            <p className="navitemAM" onClick={() => { this.setState({ nfdiv1: false, nfdiv2: false, nfdiv3: true, nfdiv4: false }) }}>SEND_MESSAGE</p>
+            <p className="navitemAM" onClick={() => { this.setState({ nfdiv1: false, nfdiv2: false, nfdiv3: true, nfdiv4: false }) }}>SEND_NOTIFICATION</p>
           </div>
         </div>
 
-        <button onClick={()=>this.handleSms()} > send sms </button>
+        {/* <button onClick={()=>this.handleSms()} > send sms </button> */}
 
         {nfdiv1 && <div className="col-md row" id='div2' style={{ backgroundColor: 'whitesmoke', paddingTop: '20px', margin: '30px auto !important' }} >
 

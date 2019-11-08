@@ -5,7 +5,9 @@ import '../../../css/scrollbar.css';
 import {Link} from 'react-router-dom'; 
 import {Button} from '../../../components/button/button.js'
 // import { CustomErrorComponent } from 'custom-error';
-
+import firebase from '../../../config/firebase.js'
+import { connect } from 'react-redux';
+import Swal from 'sweetalert2'
 
 
 class TeacherAfterLogin extends Component {
@@ -23,6 +25,78 @@ class TeacherAfterLogin extends Component {
       }
 
       
+      componentDidMount(){
+        this.validation()
+         this.addData();
+     }
+
+     validation(){
+      var data = this.props.accounttype;
+     if(data.includes('Teacher')){
+      this.props.history.index=0;
+     }else{
+      Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+      this.props.history.push("/");
+     }
+    }
+
+    addData(){
+      const {JobsNF} = this.state;
+        
+      firebase.database().ref(`/Jobs`).on("value", (snapshot)=> {
+       
+        snapshot.forEach((childSnapshot)=> {
+         var d = childSnapshot.val();
+        var obj = {
+         id : d.id ,
+         logo : d.clogo ,
+         Jimg : d.image ,
+         orgName : d.cemail ,
+         description : d.detail ,
+         date : d.date ,
+         experience : d.workType,
+         type : d.jobType ,
+         cid : d.cid ,
+         category : d.category ,
+         subject : d.subject
+        }
+        JobsNF.push(obj);
+        this.setState({JobsNF})
+        })
+      })
+  }  
+
+
+  addFav(i){
+    const {JobsNF} = this.state;
+    var data = this.props.details;
+    var skey = firebase.database().ref("Favourite/"+data.empID).push();
+    var obj = {
+            id:skey.key,
+            logo : JobsNF[i].logo ,
+            Jimg : JobsNF[i].Jimg ,
+            orgName : JobsNF[i].orgName ,
+            description : JobsNF[i].description ,
+            date : JobsNF[i].date ,
+            experience : JobsNF[i].experience,
+            type : JobsNF[i].type ,
+            cid : JobsNF[i].cid ,
+            category : JobsNF[i].category ,
+            subject : JobsNF[i].subject
+    }
+ 
+  skey.set(obj);
+  Swal.fire('Done' , 'Add Favourite Successfully')
+}
+
+
+      viewProf(i){
+        const {JobsNF} = this.state;
+        localStorage.setItem('orgID' , JobsNF[i].cid);
+        this.props.history.push('./techViewOrganization')
+      }
+
+
       data(){
         const {arr1 , arr2 , JobsNF} = this.state;
 
@@ -55,16 +129,16 @@ class TeacherAfterLogin extends Component {
 
   render() {
     const {arr1 , arr2 , JobsNF} = this.state;
-    this.data();
+    //this.data();
     return (
         
       <div style={{minWidth:'370px' , margin:'1px auto'}}>
 
         <div className="sidenavTAF">
-            <p  className="TAFp" > <img  className="TAFuimg" />  </p>
+            <p  className="TAFp" > <img  className="TAFuimg" src={this.props.details.imgURL} />  </p>
             <p style={{textAlign:'center'}}>
-                <h6> <b> Asad </b> </h6>
-                <p style={{fontSize:'12px'}}> Software Engineering Department </p>
+                <h6> {this.props.details.name} </h6>
+                <p style={{fontSize:'12px'}}> {this.props.details.designation}  </p>
             </p>
             <hr/>
            <p style={{textAlign:'center' , fontSize:'12px'}}>  View  your profile Detail here !</p>
@@ -72,7 +146,7 @@ class TeacherAfterLogin extends Component {
              
         </div>
 
-    <div className="div2TAF" >      
+    {/* <div className="div2TAF" >      
             <div>
                 <h6 style={{textAlign:'center' , color:'rgb(47, 174, 212)'}}><b>Reminder</b></h6> 
             </div>
@@ -95,7 +169,7 @@ class TeacherAfterLogin extends Component {
                     </div>
                  </div>
             </div>      
-        </div>
+        </div> */}
 
           
 
@@ -205,9 +279,9 @@ class TeacherAfterLogin extends Component {
                               <div className="col-md-4 TAFddiv3">
                               <p style={{fontSize:'13px'}}> 
                                   <b> Last Date : </b> {val.date} <br/> 
-                                  <b> Category : </b> {val.websiteLink} <br/>
+                                  <b> Category : </b> {val.category} <br/>
                                   <b> Event Type : </b> {val.type} <br/>
-                                  <b> Work Experienced : </b> {val.address}   
+                                  <b> Work Experienced : </b> {val.experience}   
                                   <hr/>
                                 </p>
                                 
@@ -224,28 +298,28 @@ class TeacherAfterLogin extends Component {
                              <div style={{textAlign:'center'}}>  
                              <hr/>
 
-                             <figure style={{display:'inline-block'}}>
+                             {/* <figure style={{display:'inline-block'}}>
                                 <img style={{width:'25px' , height:'25px'}} src={require('../../../images/rem.jpg')} />
                                 <figcaption style={{fontSize:'10px'}}><b> Reminder </b> </figcaption>
-                            </figure>
+                            </figure> */}
 
                             &nbsp; &nbsp;
-                            <figure style={{display:'inline-block'}}>
+                            <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
                                 <img  style={{width:'25px' , height:'25px'}} src={require('../../../images/user.jpg')}/> 
                                 <figcaption style={{fontSize:'10px'}}><b> Profile</b></figcaption>
                             </figure>
 
                             &nbsp; &nbsp;
-                            <figure style={{display:'inline-block'}}>
+                            <figure style={{display:'inline-block'}} onClick={(e)=>this.addFav(index)}>
                             <img src={require('../../../images/fav.png')}  style={{width:'25px' , height:'25px'}}/>
                             <figcaption style={{fontSize:'10px'}}><b>Favourite</b></figcaption>
                             </figure>
 
-                            &nbsp; &nbsp;
+                            {/* &nbsp; &nbsp;
                             <figure style={{display:'inline-block'}}>
                             <img src={require('../../../images/download.png')}  style={{width:'25px' , height:'25px'}}/>
                             <figcaption style={{fontSize:'10px'}}><b>Download</b></figcaption>
-                            </figure>
+                            </figure> */}
 
                              </div>
 
@@ -264,4 +338,17 @@ class TeacherAfterLogin extends Component {
   }
 }
 
-export default TeacherAfterLogin;
+
+function mapStateToProp(state) {
+  return ({
+    details: state.root.teacherInfo ,
+    accounttype : state.root.accountType
+  })
+}
+function mapDispatchToProp(dispatch) {
+  return ({
+      //  getUserinfo : (info)=>{ dispatch(SignupDetail(info))}
+  })
+}
+
+export default connect(mapStateToProp, mapDispatchToProp)(TeacherAfterLogin);

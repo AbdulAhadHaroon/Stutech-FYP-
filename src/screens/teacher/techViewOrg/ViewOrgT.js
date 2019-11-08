@@ -7,6 +7,7 @@ import Swal from 'sweetalert2'
 import {Button} from '../../../components/button/button.js'
 import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap';
 import Modal from 'react-responsive-modal';
+import firebase from '../../../config/firebase.js'
 
 class TechViewOrg extends Component {
   
@@ -20,32 +21,87 @@ class TechViewOrg extends Component {
     }
   }
 
-  addData(){
-      const{myOrganization}=this.state;
-       myOrganization.push({ id:'awexgbt' ,logo:require('../../../images/ssuet.png') , orgName:'SSUET' , address:'nipa , Gulshan , Karachi' , subject:'Seminar on AI' , description:'The Distant Future - Ai and robots are far behind computers but it’ll only be a matter of time before they become as regular as cell phones are in our everyday life. - Ray Kurzweil has used Moore’s law (which describes the relentless exponential improvement in digital technology with uncanny accuracy) to calculate that desktop computers will have the same processing power as human brains by the year 2029, and that by 2045 artificial intelligence will reach a point where it is able to improve itself at a rate that far exceeds anything conceivable in the past. - Several futurists and science fiction writers have predicted that human beings and machines will merge in the future into Cyborgs that are more capable and powerful than either. This idea, called trans-humanism.' , date:'12-7-19' , websiteLink : 'ssuet.edu.pk' , type:'Corperate' })
-       myOrganization.push({ id:'1we4hji' ,logo:require('../../../images/oracle.png')  , orgName:'App Bakers' , address:'near Expo Centre , Gulshan , Karachi' , subject:'Job Available for full stack Developer' , description:'We are looking for a highly skilled computer programmer who is comfortable with both front and back end programming. Full Stack Developers are responsible for developing and designing front end web architecture, ensuring the responsiveness of applications and working alongside graphic designers for web design features, among other duties. Full Stack Developers will be required to see out a project from conception to final product, requiring good organizational skills and attention to detail.' , date:'30-6-19' , websiteLink : 'www.AppBakers.com' , type:'Educational' })
-       myOrganization.push({ id:'dfmk30f' ,logo:require('../../../images/decima.png')  , orgName:'Decima.AI' , address:'DHA phase 5 , Karachi' , subject:'Internships Available for full Software Engineer' , description:'We are looking for a  skilled computer programmer who is comfortable with java programming. Please Send your resume at Decima@gmail.com ' , date:'27-6-19' , websiteLink : 'www.DecimaAI.com' , type:'Software house' })
-    }
 
-
-  showFullData(e){
-    const {dataIndex}  = this.state; 
-   document.getElementById('adata').innerHTML = null
-    this.setState({dataIndex:e})
-  } 
   
-  onOpenModal = () => {
-    this.setState({ open: true });
-  };
- 
-  onCloseModal = () => {
-    this.setState({ open: false });
-  };
+  componentDidMount(){
+    this.addData();
+  }
+
+  addData(){
+    const{myOrganization}=this.state;
+       
+       var l = localStorage.getItem('orgID');
+       console.log(l)
+      
+       if( l!=null){
+        firebase.database().ref("/Users").orderByChild("id").equalTo(""+l).on("value", (snapshot)=> {
+          snapshot.forEach((childSnapshot)=> {
+            var data = childSnapshot.val();
+            var orgObj = {
+              orgName : data.name ,
+              address : data.address ,
+              email : data.email ,
+              id : data.id ,
+              logo : data.imgURL ,
+              type : data.orgType ,
+              number : data.ph_no ,
+              websiteLink : data.webLink
+             }
+             myOrganization.push(orgObj)
+             this.setState({myOrganization})
+             localStorage.clear();
+          })
+        })    
+       }else {
+        firebase.database().ref("/Users").orderByChild("accountType").equalTo("Organization").on("value", (snapshot)=> {
+          snapshot.forEach((childSnapshot)=> {
+            var data = childSnapshot.val();
+            var orgObj = {
+              orgName : data.name ,
+              address : data.address ,
+              email : data.email ,
+              id : data.id ,
+              logo : data.imgURL ,
+              type : data.orgType ,
+              number : data.ph_no ,
+              websiteLink : data.webLink
+             }
+             myOrganization.push(orgObj)
+             this.setState({myOrganization})
+
+          })
+        })    
+       }
+
+      }
+
+      showFullData(e){
+        const {dataIndex}  = this.state; 
+       document.getElementById('adata').innerHTML = null
+        this.setState({dataIndex:e})
+      } 
+      
+      onOpenModal = () => {
+        this.setState({ open: true });
+      };
+     
+      onCloseModal = () => {
+        this.setState({ open: false });
+      };
+    
+
+
+  // addData(){
+  //     const{myOrganization}=this.state;
+  //      myOrganization.push({ id:'awexgbt' ,logo:require('../../../images/ssuet.png') , orgName:'SSUET' , address:'nipa , Gulshan , Karachi' , subject:'Seminar on AI' , description:'The Distant Future - Ai and robots are far behind computers but it’ll only be a matter of time before they become as regular as cell phones are in our everyday life. - Ray Kurzweil has used Moore’s law (which describes the relentless exponential improvement in digital technology with uncanny accuracy) to calculate that desktop computers will have the same processing power as human brains by the year 2029, and that by 2045 artificial intelligence will reach a point where it is able to improve itself at a rate that far exceeds anything conceivable in the past. - Several futurists and science fiction writers have predicted that human beings and machines will merge in the future into Cyborgs that are more capable and powerful than either. This idea, called trans-humanism.' , date:'12-7-19' , websiteLink : 'ssuet.edu.pk' , type:'Corperate' })
+  //      myOrganization.push({ id:'1we4hji' ,logo:require('../../../images/oracle.png')  , orgName:'App Bakers' , address:'near Expo Centre , Gulshan , Karachi' , subject:'Job Available for full stack Developer' , description:'We are looking for a highly skilled computer programmer who is comfortable with both front and back end programming. Full Stack Developers are responsible for developing and designing front end web architecture, ensuring the responsiveness of applications and working alongside graphic designers for web design features, among other duties. Full Stack Developers will be required to see out a project from conception to final product, requiring good organizational skills and attention to detail.' , date:'30-6-19' , websiteLink : 'www.AppBakers.com' , type:'Educational' })
+  //      myOrganization.push({ id:'dfmk30f' ,logo:require('../../../images/decima.png')  , orgName:'Decima.AI' , address:'DHA phase 5 , Karachi' , subject:'Internships Available for full Software Engineer' , description:'We are looking for a  skilled computer programmer who is comfortable with java programming. Please Send your resume at Decima@gmail.com ' , date:'27-6-19' , websiteLink : 'www.DecimaAI.com' , type:'Software house' })
+  //   }
 
 
   render(){
       const {myOrganization , dataIndex , open} = this.state;
-      this.addData();
+      // this.addData();
       return(
           <div className="mainDivVOT" style={{minHeight:'800px'}}>
 

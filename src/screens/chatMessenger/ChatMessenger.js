@@ -110,7 +110,7 @@ class ChatMessenger extends Component {
      this.showChatlist()
     }
     else{
-
+      console.log('a' , myid)
       this.showmessage(chatdata.id);
       
       var obj = {
@@ -120,16 +120,11 @@ class ChatMessenger extends Component {
         image : chatdata.image 
       }
      
-      var oo  = {
-        name : chatdata.name ,
-        id: chatdata.id ,
-        email : chatdata.email ,
-        image : chatdata.image 
-      }
 
-    var skey =  firebase.database().ref(`chatList/${myid}/${chatdata.id}`);
+    var skey =  firebase.database().ref(`chatList/`).child(`${myid}/${chatdata.id}`);
     skey.set(obj)
     var fkey =  firebase.database().ref(`chatList/${chatdata.id}/${myid}`);
+    
     var myobj = {
       email : myemail ,
       id  : myid,
@@ -185,9 +180,11 @@ class ChatMessenger extends Component {
       }
       else{
         if(chatdata.id != undefined){ 
+        console.log('1')  
         var skey =  firebase.database().ref( `chating/${chatdata.id}/${pushNode1}`).push();
         }
         else{
+          console.log('2')
           var skey =  firebase.database().ref( `chating/${userObj.id}/${pushNode1}`).push();
         }
         var dkey =  firebase.database().ref( `chating/${myid}/${pushNode2}`).push();

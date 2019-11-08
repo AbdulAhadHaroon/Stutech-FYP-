@@ -6,8 +6,9 @@ import {Link} from 'react-router-dom';
 import Swal from 'sweetalert2'
 import {Button} from '../../../components/button/button.js'
 import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
-class StuViewProfile extends Component {
+class TeachViewProfile extends Component {
   
   constructor() {
     super();
@@ -20,28 +21,28 @@ class StuViewProfile extends Component {
     }
   }
 
-  addData(){
-      const{skills , achievements}=this.state;
-       skills.push({ id:'awexgbt' , skill:'Java'})
-       skills.push({ id:'awexgbt' , skill:'Java script'})
-       skills.push({ id:'awexgbt' , skill:'React.js'})   
+  // addData(){
+  //     const{skills , achievements}=this.state;
+  //      skills.push({ id:'awexgbt' , skill:'Java'})
+  //      skills.push({ id:'awexgbt' , skill:'Java script'})
+  //      skills.push({ id:'awexgbt' , skill:'React.js'})   
 
-       achievements.push({id:'1' , achieve:'complete android course'})
-       achievements.push({id:'1' , achieve:'complete python course'})
-       achievements.push({id:'1' , achieve:'complete react course'})
-    }
+  //      achievements.push({id:'1' , achieve:'complete android course'})
+  //      achievements.push({id:'1' , achieve:'complete python course'})
+  //      achievements.push({id:'1' , achieve:'complete react course'})
+  //   }
 
 
-  showFullData(e){
-    const {dataIndex}  = this.state; 
-   document.getElementById('adata').innerHTML = null
-    this.setState({dataIndex:e})
-  }  
+  // showFullData(e){
+  //   const {dataIndex}  = this.state; 
+  //  document.getElementById('adata').innerHTML = null
+  //   this.setState({dataIndex:e})
+  // }  
 
 
   render(){
       const {skills , achievements} = this.state;
-      this.addData();
+      // this.addData();
       return(
           <div  style={{minHeight:'800px'}}>
             
@@ -56,15 +57,15 @@ class StuViewProfile extends Component {
           <div className="col-lg  div1TVP  row" >
              
              <div className="col-lg div2TVP">
-                <p style={{textAlign:'center' , margin:'20px'}}> <img  className="img1TVP" /> </p>
+                <p style={{textAlign:'center' , margin:'20px'}}> <img  className="img1TVP" src={this.props.details.imgURL}/> </p>
                     <h6> <b style={{color:'rgb(47, 174, 212)'}}> Personal Information </b> </h6>
                     <p>
-                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </b>{}<br/><br/>
-                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>PhoneNo&nbsp;&nbsp;&nbsp;:</b>{}<br/><br/>
-                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>Email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </b>{}<br/><br/>
-                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>Gender&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </b>{}<br/><br/>
-                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>DOB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </b>{}<br/><br/>
-                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>Address&nbsp;&nbsp;&nbsp;&nbsp;:</b>{}<br/><br/>
+                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>Name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.props.details.name} </b><br/><br/>
+                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>PhoneNo&nbsp;&nbsp;&nbsp;: {this.props.details.number}</b>{}<br/><br/>
+                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>Email&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.props.details.email} </b>{}<br/><br/>
+                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>Gender&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.props.details.gender} </b>{}<br/><br/>
+                        <b style={{fontSize:'20px' , marginLeft:'10%' , fontSize:'14px'}}>DOB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.props.details.DOB} </b>{}<br/><br/>
+            
                     </p>
 
              </div>
@@ -74,26 +75,29 @@ class StuViewProfile extends Component {
                     <h6> <b style={{color:'rgb(47, 174, 212)'}}> Teacher Information  </b> </h6>
                     <p>
                         <br/>
-                        <b style={{fontSize:'20px' , marginLeft:'10%'  , fontSize:'14px'}}>ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </b>{}<br/>
-                        <b style={{fontSize:'20px' , marginLeft:'10%'  , fontSize:'14px'}}>Designation&nbsp;&nbsp;:</b>{}<br/>
-                        <b style={{fontSize:'20px' , marginLeft:'10%'  , fontSize:'14px'}}>Depart&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</b>{}<br/>
+                        <b style={{fontSize:'20px' , marginLeft:'10%'  , fontSize:'14px'}}>Employee ID&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.props.details.empID} </b>{}<br/>
+                        <b style={{fontSize:'20px' , marginLeft:'10%'  , fontSize:'14px'}}>Designation&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.props.details.designation}</b>{}<br/>
+                        <b style={{fontSize:'20px' , marginLeft:'10%'  , fontSize:'14px'}}>Department&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: {this.props.details.department}</b>{}<br/>
                     </p>
 
 
                     <br/>
-                    <h6> <b style={{color:'rgb(47, 174, 212)'}}> Qualifactions</b> </h6>
+                    <h6> <b style={{color:'rgb(47, 174, 212)'}}> Qualifactions </b> </h6>
                     <p>
-                     {
+                     {/* {
                      achievements.map((val , index ) => {
                        return(
                          <ul style={{marginLeft:'10%' , fontSize:'14px'}}>
                             <li>   
-                            <b style={{fontSize:'14px'}}>{ val.achieve }</b>
+                            <b style={{fontSize:'14px'}}>{ this.props.details.qualification }</b>
                             </li>
                          </ul>
                        )
                     })
-                    }                       
+                    }                        */}
+
+                    <br/>
+                      <b style={{fontSize:'20px' , marginLeft:'10%'  , fontSize:'14px'}}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{this.props.details.qualification}</b>{}<br/>
                     </p>
 
                    
@@ -107,4 +111,16 @@ class StuViewProfile extends Component {
        )}
     }
 
-export default StuViewProfile;
+    function mapStateToProp(state) {
+      return ({
+        details: state.root.teacherInfo ,
+        accounttype : state.root.accountType
+      })
+    }
+    function mapDispatchToProp(dispatch) {
+      return ({
+        // teacherInfo :(info3)=>{ dispatch(TeacherDetail(info3))} ,
+      })
+    }
+    
+    export default connect(mapStateToProp, mapDispatchToProp)(TeachViewProfile);
