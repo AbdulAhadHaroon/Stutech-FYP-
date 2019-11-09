@@ -151,6 +151,10 @@ class TeacherAddJob extends Component {
                   skey.set(jobObj); 
                   this.setState({progress:false})
                   Swal.fire('Congratulation', 'Your Job Post  Added Successfully')
+
+                   document.getElementById('subject').value = '';
+                   document.getElementById('detail').value = '';
+                   document.getElementById('date').value = '';
             }) 
         }
         }

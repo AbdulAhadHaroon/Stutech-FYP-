@@ -23,9 +23,9 @@ class orgAddJob extends Component {
         dataIndex : null ,
         progress : false ,
         progress1 : true ,
-        jobType : 'none' ,
-        workType : 'none' ,
-        category : 'none'
+        jobType : 'Job' ,
+        workType : 'Fresh' ,
+        category : 'Web , Mobile and Software developer'
     }
   }
 

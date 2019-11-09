@@ -160,9 +160,9 @@ class orgAfterLogin extends Component {
             <Nav className="mr-auto">
               </Nav> 
 
-              <Form inline style={{marginRight:'7%' , marginLeft:'7%' , textAlign:'center'}}>
+              {/* <Form inline style={{marginRight:'7%' , marginLeft:'7%' , textAlign:'center'}}>
                 <FormControl style={{ width:'400px' , height:'8%' , fontSize:'10px' }}  type="text" placeholder="Search" className="mr-sm-2" />
-              </Form>
+              </Form> */}
 
 
               <Nav.Link>

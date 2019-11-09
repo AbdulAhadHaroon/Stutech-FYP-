@@ -88,7 +88,7 @@ class TeacherAfterLogin extends Component {
          id : d.id ,
          logo : d.clogo ,
          Jimg : d.image ,
-         orgName : d.cemail ,
+         orgName : d.cname ,
          description : d.detail ,
          date : d.date ,
          experience : d.workType,

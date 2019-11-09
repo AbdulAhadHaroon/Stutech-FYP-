@@ -78,7 +78,8 @@ class TechViewOrg extends Component {
               logo : data.imgURL ,
               type : data.orgType ,
               number : data.ph_no ,
-              websiteLink : data.webLink
+              websiteLink : data.webLink,
+              detail : data.detail || 'No Details Found'
              }
              myOrganization.push(orgObj)
              this.setState({myOrganization , progress:false})
@@ -181,12 +182,12 @@ class TechViewOrg extends Component {
                                <p style={{fontSize:'12px'}}>
                                  <b> Website Link : </b>  {myOrganization[dataIndex].websiteLink}  <br/> 
                                  <b> Organization type :</b> {myOrganization[dataIndex].type}<br/> 
-                                 <b> Contact Number :  </b> +92-315-2378451 <br/>
-                                 <b> Email :  </b> Organization@gmail.com <br/> 
+                                 <b> Contact Number :  </b> {myOrganization[dataIndex].number} <br/>
+                                 <b> Email :  </b> {myOrganization[dataIndex].email} <br/> 
                                  <b> Address : </b>  {myOrganization[dataIndex].address} <br/><br/> 
                                  </p>
 
-                                 <p style={{textAlign:'left' , fontSize:'12px'}}> <b> Description :  </b> </p>
+                                 <p style={{textAlign:'left' , fontSize:'12px'}}> <b> Description : {myOrganization[dataIndex].detail}  </b> </p>
                                  <p className="scrollbar square scrollbar-lady-lips thin" style={{fontSize:'12px' ,textAlign:'center' , padding:'10px' , height:'200px' , overflowY:'scroll'}}>
                                   {myOrganization[dataIndex].description} 
                                  </p>
