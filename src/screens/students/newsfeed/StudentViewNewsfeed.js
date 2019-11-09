@@ -20,16 +20,6 @@ class StudentViewNewsFeed extends Component {
     super();
 
     this.state = {
-        // nfdiv1:true ,
-        // nfdiv2:false,
-        // nfdiv3:false,
-        // nfdiv4:false,
-        // nfdiv5:false,
-        // b1 : true ,
-        // b2 : false ,
-        // b3 : false ,
-        // b4 : false ,
-        // b5 : false ,
         progress:true,
         JobsNF:[] , 
         allNF:[] ,
@@ -40,95 +30,8 @@ class StudentViewNewsFeed extends Component {
   componentDidMount(){
     this.validation()
      this.addData();
-    //  this.showchart();
  }
 
-//  showchart(){
-
-// var users=0 , post=0 , chat=0 , achievements=0 , complain=0;
-
-//  firebase.database().ref().child("Users").on("value", function(snapshot1) {
-  
-//    users = snapshot1.numChildren()
-  
-//    firebase.database().ref().child("Jobs").on("value", function(snapshot2) {
-//     post = snapshot2.numChildren()
-
-//     firebase.database().ref().child("chating").on("value", function(snapshot3) {
-//       chat = snapshot3.numChildren()
-
-//       firebase.database().ref().child("Achievements").on("value", function(snapshot4) {
-//         achievements = snapshot4.numChildren()
-
-
-//         firebase.database().ref().child("StudentComplain").on("value", function(snapshot5) {
-//           complain = snapshot5.numChildren()
-        
-
-      
-
-//     var ctx = document.getElementById('myChart');
-//     var myChart = new Chart(ctx, {
-//       type: 'bar',
-//       data: {
-//           labels: ['Users', 'Posts', 'Chats', 'Achievements', 'Complain'],
-//           datasets: [{
-//               label: '# of Votes',
-//               data: [users, post, chat, achievements, complain],
-//               backgroundColor: [
-//                   'rgba(255, 99, 132, 0.2)',
-//                   'rgba(54, 162, 235, 0.2)',
-//                   'rgba(255, 206, 86, 0.2)',
-//                   'rgba(75, 192, 192, 0.2)',
-//                   'rgba(153, 102, 255, 0.2)',
-//               ],
-//               borderColor: [
-//                   'rgba(255, 99, 132, 1)',
-//                   'rgba(54, 162, 235, 1)',
-//                   'rgba(255, 206, 86, 1)',
-//                   'rgba(75, 192, 192, 1)',
-//                   'rgba(153, 102, 255, 1)',
-//               ],
-//               borderWidth: 1
-//           }]
-//       },
-//       options: {
-//           scales: {
-//               yAxes: [{
-//                   ticks: {
-//                       beginAtZero: true
-//                   }
-//               }]
-//           }
-//       }
-//   });
-
-
-
-//    })
-  
-//   })
-
-// }) }) })
-
-  
-
- 
-
- 
-
-    
-//   //  })
- 
- 
- 
- 
-
-
-
-
-//   // var myChart = new Chart(ctx , myChart);
-//  }
 
  validation(){
    var data = this.props.accounttype;

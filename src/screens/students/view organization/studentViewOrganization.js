@@ -8,6 +8,8 @@ import {Button} from '../../../components/button/button.js'
 import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap';
 import Modal from 'react-responsive-modal';
 import firebase from '../../../config/firebase.js'
+import { connect } from 'react-redux';
+import '../../Loader/loader.css'
 
 class StuViewOrg extends Component {
   
@@ -18,13 +20,27 @@ class StuViewOrg extends Component {
         myOrganization:[] ,
         dataIndex : null,
         open: false,
-        fdata : 'softwarehouse'
+        fdata : 'softwarehouse',
+        progress:true
+        
     }
   }
 
   componentDidMount(){
     this.addData();
+    this.validation()
   }
+
+  validation(){
+    var data = this.props.accounttype;
+   if(data.includes('Student')){
+    this.props.history.index=0;
+   }else{
+    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+    this.props.history.push("/");
+   }
+  }
+
 
   addData(){
     const{myOrganization}=this.state;
@@ -48,7 +64,7 @@ class StuViewOrg extends Component {
               detail : data.detail
              }
              myOrganization.push(orgObj)
-             this.setState({myOrganization})
+             this.setState({myOrganization , progress:false})
              localStorage.clear();
           })
         })    
@@ -68,7 +84,7 @@ class StuViewOrg extends Component {
               detail : data.detail
              }
              myOrganization.push(orgObj)
-             this.setState({myOrganization})
+             this.setState({myOrganization , progress:false})
 
           })
         })    
@@ -93,6 +109,7 @@ class StuViewOrg extends Component {
 
   filter(){
   const {fdata , myOrganization} = this.state;
+  this.setState({progress:true})
 
   while(myOrganization.length>0){
     myOrganization.splice(0,1);
@@ -120,7 +137,7 @@ class StuViewOrg extends Component {
         detail : data.detail
        }
        myOrganization.push(orgObj)
-       this.setState({myOrganization})
+       this.setState({myOrganization , progress:false})
     })
   }else{
     Swal.fire('Oops' , `No ${fdata} Organization Found` , 'error')
@@ -130,7 +147,7 @@ class StuViewOrg extends Component {
 
 
   render(){
-      const {myOrganization , dataIndex , open} = this.state;
+      const {myOrganization , dataIndex , open , progress} = this.state;
       return(
           <div className="mainDivVOT" style={{minHeight:'800px'}}>
 
@@ -176,6 +193,13 @@ class StuViewOrg extends Component {
                   {/* <img onClick={this.onOpenModal} data-toggle="modal" data-target="#exampleModal"  style={{width:'20px' , height:'20px' , float:'right'}} src={require('../../../images/filter.png')}  />
               */}  </Navbar.Collapse> 
           </Navbar>
+
+
+          {progress &&   <div class='loaddiv'> <br/><br/>
+                    <div class="loader"></div>
+                    <p><b>Loading please wait</b></p>
+                  </div> }
+ 
 
               <div  className="col-md-14 row">
 
@@ -231,4 +255,16 @@ class StuViewOrg extends Component {
 
 }
 
-export default StuViewOrg;
+function mapStateToProp(state) {
+    return ({
+      details: state.root.studentInfo ,
+      accounttype : state.root.accountType
+    })
+  }
+  function mapDispatchToProp(dispatch) {
+    return ({
+        //  getUserinfo : (info)=>{ dispatch(SignupDetail(info))}
+    })
+  }
+  
+  export default connect(mapStateToProp, mapDispatchToProp)(StuViewOrg);

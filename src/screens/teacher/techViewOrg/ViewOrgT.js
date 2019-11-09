@@ -9,6 +9,7 @@ import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap
 import Modal from 'react-responsive-modal';
 import firebase from '../../../config/firebase.js'
 import { connect } from 'react-redux';
+import '../../Loader/loader.css'
 
 class TechViewOrg extends Component {
   
@@ -19,6 +20,7 @@ class TechViewOrg extends Component {
         myOrganization:[] ,
         dataIndex : null,
         open: false,
+        progress : true  ,
     }
   }
 
@@ -40,7 +42,7 @@ class TechViewOrg extends Component {
   }
 
   addData(){
-    const{myOrganization}=this.state;
+    const{myOrganization , progress}=this.state;
        
        var l = localStorage.getItem('orgID');
        console.log(l)
@@ -60,7 +62,7 @@ class TechViewOrg extends Component {
               websiteLink : data.webLink
              }
              myOrganization.push(orgObj)
-             this.setState({myOrganization})
+             this.setState({myOrganization , progress:false})
              localStorage.clear();
           })
         })    
@@ -79,7 +81,7 @@ class TechViewOrg extends Component {
               websiteLink : data.webLink
              }
              myOrganization.push(orgObj)
-             this.setState({myOrganization})
+             this.setState({myOrganization , progress:false})
 
           })
         })    
@@ -112,7 +114,7 @@ class TechViewOrg extends Component {
 
 
   render(){
-      const {myOrganization , dataIndex , open} = this.state;
+      const {myOrganization , dataIndex , open , progress} = this.state;
       // this.addData();
       return(
           <div className="mainDivVOT" style={{minHeight:'800px'}}>
@@ -160,6 +162,12 @@ class TechViewOrg extends Component {
                   <img onClick={this.onOpenModal} data-toggle="modal" data-target="#exampleModal"  style={{width:'20px' , height:'20px' , float:'right'}} src={require('../../../images/filter.png')}  />
                 </Navbar.Collapse>
           </Navbar>
+
+          {progress && <div class='loaddiv'> 
+                            <br/> <br/>
+                          <div class="loader"></div>
+                          <p><b>Loading please wait</b></p>
+                        </div> }
 
               <div  className="col-md-14 row">
 

@@ -6,6 +6,7 @@ import Swal from 'sweetalert2'
 import {Button} from '../../../components/button/button.js'
 import firebase from '../../../config/firebase.js'
 import { connect } from 'react-redux';
+import '../../Loader/loader.css'
 
 
 import { Navbar} from 'react-bootstrap';
@@ -17,14 +18,26 @@ class StudentAddFavourite extends Component {
     super();
 
     this.state = {
-        myFav:[]
+        myFav:[] ,
+        progress : true 
     }
 
   }
 
   componentDidMount(){
     this.addData();
+    this.validation()
 }
+
+validation(){
+    var data = this.props.accounttype;
+   if(data.includes('Student')){
+    this.props.history.index=0;
+   }else{
+    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+    this.props.history.push("/");
+   }
+  }
 
 addData(){
   const {myFav} = this.state;
@@ -48,7 +61,7 @@ addData(){
      from : d.from
     }
     myFav.push(obj);
-    this.setState({myFav})
+    this.setState({myFav , progress:false})
     })
    }
   })
@@ -93,7 +106,7 @@ viewProf(i){
 
   render(){
 
-    const {myFav} = this.state;
+    const {myFav , progress} = this.state;
    
       return(
           <div>
@@ -104,6 +117,11 @@ viewProf(i){
                     <img  style={{height:'70px' , width:'110px' }} src={require('../../../images/logo.png')}/> 
                 </Navbar.Brand>
             </Navbar> 
+
+            {progress &&   <div class='loaddiv'> <br/><br/>
+                    <div class="loader"></div>
+                    <p><b>Loading please wait</b></p>
+                  </div> }
  
                
                   <div  className="col-md-12 newsDiv1FV" >
@@ -123,9 +141,9 @@ viewProf(i){
                                       <div style={{margin:'10px auto'}}>   
                                         <p style={{fontSize:'13px'}}> 
                                             <b> Last Date : </b> {val.date} <br/> 
-                                            <b> Category : </b> {val.websiteLink} <br/>
+                                            <b> Category : </b> {val.category} <br/>
                                             <b> Event Type : </b> {val.type} <br/>
-                                            <b> Work Experienced : </b> {val.category}   
+                                            <b> Work Experienced : </b> {val.experience}   
                                         </p>
                                             
                                         <div style={{textAlign:'center'}}>                                        

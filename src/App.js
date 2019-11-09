@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { PersistGate } from 'redux-persist/integration/react'
 import {Provider} from 'react-redux';
 import {store , persistor} from './store';
-
+import ReactGA from 'react-ga';
 import './App.css';
 
 // import mail from './screens/email/mailform.js'
@@ -27,6 +27,7 @@ import StuShareAchievments from './screens/students/my achievements/studentShare
 import StuViewNotification from './screens/students/notification/studentViewNotification.js'
 import StuViewProfile  from './screens/students/viewProfile/stuViewProfile.js'
 import StuDynamicProfile  from './screens/students/DynamicProfile/DynamicProf.js'
+import StudentViewAchievements from './screens/students/view achievements/Student ViewAchievements.js'
 
 import OrgAfterLogin from './screens/organization/orgAfterLogin/AfterLoginOrg.js'
 import OrgAddJob from './screens/organization/orgAddJob/addJobO.js'
@@ -55,8 +56,15 @@ import {BrowserRouter as Router , Switch , Route , Redirect} from 'react-router-
 
 import N404 from './screens/N404.js';
 
+
+function initialAnalytics(){
+  ReactGA.initialize('UA-151953691-1');
+  ReactGA.pageview('/HomePage')
+}
+
 class App extends Component {
   render() {
+    initialAnalytics();
     return (
       <Provider store={store}> 
        <PersistGate loading={null} persistor={persistor}>
@@ -84,6 +92,7 @@ class App extends Component {
           <Route exact path="/stuNotification" component={StuViewNotification}/>
           <Route exact path="/stuViewProfile" component={StuViewProfile}/>
           <Route exact path="/stuDynamicProfile" component={StuDynamicProfile}/>
+          <Route exact path="/studentAchievements" component={StudentViewAchievements}/>
          
           <Route exact path="/orgAfterLogin" component={OrgAfterLogin}/>
           <Route exact path="/orgAddJob" component={OrgAddJob}/>

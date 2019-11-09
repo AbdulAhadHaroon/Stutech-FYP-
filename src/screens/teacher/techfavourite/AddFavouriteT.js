@@ -7,6 +7,7 @@ import {Button} from '../../../components/button/button.js'
 import firebase from '../../../config/firebase.js'
 import { connect } from 'react-redux';
 import { Navbar} from 'react-bootstrap';
+import '../../Loader/loader.css'
 
 
 class TeacherAddFavourite extends Component {
@@ -15,7 +16,8 @@ class TeacherAddFavourite extends Component {
     super();
 
     this.state = {
-        myFav:[]
+        myFav:[],
+        progress : true  ,
     }
   }
 
@@ -37,7 +39,7 @@ if(data.includes('Teacher')){
 }
 
         addData(){
-          const {myFav} = this.state;
+          const {myFav , progress} = this.state;
           var data = this.props.details;  
           firebase.database().ref(`Favourite/${data.empID}`).on("value", (snapshot)=> {
           if(snapshot.exists()){
@@ -57,7 +59,7 @@ if(data.includes('Teacher')){
             subject : d.subject
             }
             myFav.push(obj);
-            this.setState({myFav})
+            this.setState({myFav , progress:false})
             })
           }
           })
@@ -93,18 +95,12 @@ viewProf(i){
   localStorage.setItem('orgID' , myFav[i].cid);
   this.props.history.push('./techViewOrganization')
  }
-  // addData(){
-  //   const{myFav}=this.state;
-  //   myFav.push({ id:'awexgbt' ,logo:require('../../../images/ssuet.png') ,Jimg:require('../../../images/j1.jpg')  , orgName:'SSUET' , address:'nipa , Gulshan , Karachi' , subject:'Seminar on AI' , description:'The Distant Future - Ai and robots are far behind computers but it’ll only be a matter of time before they become as regular as cell phones are in our everyday life. - Ray Kurzweil has used Moore’s law (which describes the relentless exponential improvement in digital technology with uncanny accuracy) to calculate that desktop computers will have the same processing power as human brains by the year 2029, and that by 2045 artificial intelligence will reach a point where it is able to improve itself at a rate that far exceeds anything conceivable in the past. - Several futurists and science fiction writers have predicted that human beings and machines will merge in the future into Cyborgs that are more capable and powerful than either. This idea, called trans-humanism.' , date:'12-7-19' , websiteLink : 'ssuet.edu.pk' , type:'Seminar' })
-  //   myFav.push({ id:'1we4hji' ,logo:require('../../../images/oracle.png'),Jimg:require('../../../images/j2.jpg')   , orgName:'App Bakers' , address:'near Expo Centre , Gulshan , Karachi' , subject:'Job Available for full stack Developer' , description:'We are looking for a highly skilled computer programmer who is comfortable with both front and back end programming. Full Stack Developers are responsible for developing and designing front end web architecture, ensuring the responsiveness of applications and working alongside graphic designers for web design features, among other duties. Full Stack Developers will be required to see out a project from conception to final product, requiring good organizational skills and attention to detail.' , date:'30-6-19' , websiteLink : 'www.AppBakers.com' , type:'Job' })
-  //   myFav.push({ id:'dfmk30f' ,logo:require('../../../images/decima.png'),Jimg:require('../../../images/j3.png')  , orgName:'Decima.AI' , address:'DHA phase 5 , Karachi' , subject:'Internships Available for full Software Engineer' , description:'We are looking for a  skilled computer programmer who is comfortable with java programming. Please Send your resume at Decima@gmail.com ' , date:'27-6-19' , websiteLink : 'www.DecimaAI.com' , type:'internship' })
-
-  // }
+ 
 
 
   render(){
 
-    const {myFav} = this.state;
+    const {myFav , progress} = this.state;
   // this.addData()
       return(
           <div>
@@ -115,6 +111,12 @@ viewProf(i){
                     <img  style={{height:'70px' , width:'110px' }} src={require('../../../images/logo.png')}/> 
                 </Navbar.Brand>
             </Navbar> 
+
+            {progress && <div class='loaddiv'> 
+                            <br/> <br/>
+                          <div class="loader"></div>
+                          <p><b>Loading please wait</b></p>
+                        </div> }
  
                
                   <div  className="col-md-12 newsDiv1FVT" >

@@ -10,6 +10,9 @@ import studentProfile from '../profile/studentProfile';
 import { connect } from 'react-redux';
 import firebase from '../../../config/firebase.js'
 import {ChatData} from '../../../store/action/action';
+import Modal from 'react-responsive-modal';
+import axios from 'axios'
+
 
 class StuDynamicProfile extends Component {
   
@@ -28,7 +31,10 @@ class StuDynamicProfile extends Component {
        email : '' ,
        department : '' ,
        batch : '' , 
-       achievements:[]
+       achievements:[] ,
+       open: false,
+       subject : '' ,
+       message : '' 
     
     }
   }
@@ -46,13 +52,52 @@ class StuDynamicProfile extends Component {
     id : data.id ,
     name : data.name ,
     email : data.email ,
-    image : data.image
+    image : data.image 
   }
 
   this.props.chatinfo(obj)
   this.props.history.push("/chatMes")
 
   }
+
+  onOpenModal = () => {
+    this.setState({ open: true });
+  };
+ 
+  onCloseModal = () => {
+    this.setState({ open: false });
+  };
+
+ sendEmail(){
+  const { email , subject , message } = this.state;
+  var to = email;
+  var from;
+  
+  if(this.props.mydetails1.email != undefined ){
+   from = this.props.mydetails1.email;
+  }else if(this.props.mydetails2.email != undefined ){
+   from = this.props.mydetails2.email;
+  }
+  else {
+    from = 'admin@stutechgmail.com'
+  }
+
+  if(subject.length<5){
+    Swal.fire('Oops' , 'Please Write Your Subject Correctly' , 'error')
+  }else if(message.length<10){
+    Swal.fire('Oops' , 'Please Write Your Message Correctly' , 'error')
+  }else{
+    axios.post('https://stutech2019.herokuapp.com/send', {
+      from , to , subject , message
+    }).then((res) => {
+      console.log(res.statusText);
+      Swal.fire('Done' , 'Your  Email has been sent' )
+    }).catch(err=>{
+      Swal.fire('Oops' , err , 'error' )
+    })
+  }
+ }
+
 
   addData(){
     const {  yourself  , matric  , inter , skills  , name  , phno  , image  , gender  , email  , department , batch , achievements} = this.state;  
@@ -115,10 +160,26 @@ class StuDynamicProfile extends Component {
 
 
   render(){
-    const { yourself  , matric  , inter , skills  , name  , phno  , image  , gender  , email  , department , batch , achievements} = this.state;
-   
+    const { message , subject , open , yourself  , matric  , inter , skills  , name  , phno  , image  , gender  , email  , department , batch , achievements} = this.state;
+    var email1 = this.props.mydetails1.email ;
+    var email2 = this.props.mydetails2.email;
+    
       return(
           <div>
+
+      <Modal open={open} onClose={this.onCloseModal} center>
+          <div  style={{borderRadius:'10px' , padding:'20px'}}>
+          <h6 style={{color:'rgb(20, 194, 224)' , textAlign:'center'}} > <b> Send Email </b> </h6>
+          <hr/>
+      {email1!=undefined &&  <p> From :  <input className="form-control" value={email1} /></p> }
+      {email2!=undefined &&   <p> From :  <input className="form-control" value={email2} /></p> }
+            <p> To :  <input className="form-control" value={email} /></p>
+            <p> Subject :  <input className="form-control" value={subject} onChange={(e)=>this.setState({ subject:e.target.value })} /></p>
+            <p> Message :  <input className="form-control" value={message}  onChange={(e)=>this.setState({ message:e.target.value })}/></p>
+              <Button  style={{margin:'2px auto'}} type="submit" text="Send" onClick={()=>this.sendEmail()} />
+
+          </div>
+        </Modal>
             
             <Navbar  expand="lg"  style={{height:'auto' , width:'100%' ,  marginLeft:'0px' , background:'rgb(20, 194, 224)'}}>
                 <Navbar.Brand>
@@ -177,8 +238,7 @@ class StuDynamicProfile extends Component {
 
                   <p style={{textAlign:'center'}}>  
                   <Button text="Chat" onClick={()=>this.StartChat()}/>
-                  <Button text="Message"/>
-                  <Button text="Email"/> 
+                  <Button text="Email"  onClick={()=>this.onOpenModal()} /> 
                   </p>
 
              </div>
@@ -193,7 +253,9 @@ class StuDynamicProfile extends Component {
     function mapStateToProp(state) {
         return ({
           details: state.root.dynamicInfo ,
-          accounttype : state.root.accountType
+          accounttype : state.root.accountType ,
+          mydetails1 : state.root.teacherInfo ,
+          mydetails2: state.root.organizationInfo
         })
       }
       function mapDispatchToProp(dispatch) {

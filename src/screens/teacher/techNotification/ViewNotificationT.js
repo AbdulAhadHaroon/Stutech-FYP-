@@ -50,12 +50,7 @@ class TeachViewNotification extends Component {
           }
         })
     })
-
-
-    //   myNotifications.push({ id:'awexgbt' ,logo:require('../../../images/stuuser.png') ,  orgName:'SSUET' , subject:'Seminar on AI' , date:'12-4-2018' , time:'1:00 pm' })
-    //   myNotifications.push({ id:'1we4hji' ,logo:require('../../../images/stuuser.png') ,  orgName:'App Bakers'  , subject:'Job Available for full stack Developer' , date:'12-4-2018' , time:'10:00am'})
-    //   myNotifications.push({ id:'dfmk30f' ,logo:require('../../../images/stuuser.png') ,  orgName:'Decima.AI'  , subject:'Internships Available for full Software Engineer' , date:'12-7-2018' , time:'11:30am'  })
-    }
+   }
 
 
   render(){

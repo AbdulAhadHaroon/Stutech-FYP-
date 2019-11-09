@@ -37,9 +37,18 @@ class Studentprofile extends Component {
 
   componentDidMount(){
     this.getPersonalInfo();
-    // this.getCredInfo();
-    // this.getAboutInfo();
-    // this.getSkillInfo();
+    this.validation()
+  }
+
+
+  validation(){
+    var data = this.props.accounttype;
+   if(data.includes('Student')){
+    this.props.history.index=0;
+   }else{
+    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+    this.props.history.push("/");
+   }
   }
 
   getPersonalInfo(){
@@ -208,7 +217,7 @@ class Studentprofile extends Component {
       }).then(downloadURL => {
         firebase.database().ref("Users/"+data.id).update({imgURL:downloadURL});
         this.setState({progress1:false})
-        Swal.fire('Profile Image Updated Successfully')
+        Swal.fire('Done' , 'Profile Image Updated Successfully')
     })
    }
   }
@@ -221,7 +230,7 @@ class Studentprofile extends Component {
     else{
       var data = this.props.details;
       firebase.database().ref("Users/"+data.id).update({nationality:nat});
-      Swal.fire('Nationality Updated Successfully')
+      Swal.fire('Done' , 'Nationality Updated Successfully')
     }
   }
 
@@ -233,7 +242,7 @@ class Studentprofile extends Component {
     else{
       var data = this.props.details;
       firebase.database().ref("Users/"+data.id).update({address:add});
-      Swal.fire('Address Updated Successfully')
+      Swal.fire('Done' , 'Address Updated Successfully')
     }
   }
    
@@ -403,12 +412,12 @@ class Studentprofile extends Component {
                  <div id="maindiv1" className="row" style={{backgroundColor:'whitesmoke' , paddingTop:'20px'}}>
     
                     <div className="col-md-8" style={{textAlign:'center' , margin:'20px auto'}}>
-                    <img  className="userimgSP" id="vpimg" src={require('../../../images/stuuser.png')} />
+                    <img  className="userimgSP" id="vpimg" className="pimg1" src={require('../../../images/stuuser.png')} />
                     <br/>
                     <br/>
                         <div className="custom-file mx-1">
                             <div className="input-group mb-2"></div>
-                             <input style={{height:'30px' , fontSize:'10px'}} type="file" className="custom-file-input" id="pimg" required/>
+                             <input style={{height:'30px' , fontSize:'10px'}} type="file" className="custom-file-input"  id="pimg" required/>
                             <label className="custom-file-label" >Upload new Profile Picture</label>
                            {!progress1 && <button className="btnSgnSP btn btn-success" onClick={()=>{this.updatePicture1()}} ><b> Update </b></button> }
                         </div>

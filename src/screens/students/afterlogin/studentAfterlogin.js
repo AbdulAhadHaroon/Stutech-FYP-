@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import '../../Loader/loader.css'
 import Swal from 'sweetalert2'
 import Modal from 'react-responsive-modal';
+import {StudentDetail , DynamicData , ChatData} from '../../../store/action/action.js';
 // import { CustomErrorComponent } from 'custom-error';
 
 
@@ -80,8 +81,7 @@ class studentAfterLogin extends Component {
 
     addData(){
         const {JobsNF} = this.state;
-        var data = this.props.details;
-        console.log('asad' , data.number)
+  
           
         firebase.database().ref(`/Jobs`).limitToLast(10).on("value", (snapshot)=> {
          
@@ -186,7 +186,7 @@ class studentAfterLogin extends Component {
           xhr.addEventListener('load', () => {
               console.log(xhr.responseText)
                 })
-         xhr.open('GET', `http://smartsms.pk/json?api_token= 6ee650fde65d4b1a8136875e0190358ecb634db168688b66305b2d88ffda&api_secret=shahjahan123&to=${data.number}&from=Brand&date=${rdate}&time=${rtime}&message=You+set+a+reminder+for+${rsubject}+on+this+Date+${rdate}`)
+         xhr.open('GET', `https://smartsms.pk/json?api_token= 6ee650fde65d4b1a8136875e0190358ecb634db168688b66305b2d88ffda&api_secret=shahjahan123&to=${data.number}&from=Brand&date=${rdate}&time=${rtime}&message=You+set+a+reminder+for+${rsubject}+on+this+Date+${rdate}`)
          xhr.send()
 
          Swal.fire('Done' , 'Reminder Set Successfully')
@@ -194,6 +194,17 @@ class studentAfterLogin extends Component {
     }
    } 
       
+   signout(){
+
+    firebase.auth().signOut();
+    this.props.sInfo({})
+    this.props.chatinfo({});
+    this.props.dInfo({});
+    this.props.history.push('/')
+    Swal.fire('Done' , 'Signout Successfully');
+
+    
+  }
 
   render() {
     const {arr1 , arr2 , JobsNF , progress , open , rsubject , rname , rdate , rtime , reminder} = this.state;
@@ -259,8 +270,8 @@ class studentAfterLogin extends Component {
 
         <div className="topnavAF  sticky-top scrollbar square scrollbar-lady-lips thin">
 
-                <img className="sidelogoAF" src={require('../../../images/logo.png')}/> 
-                <input className="form-control searchinputAF" type="text" placeholder="Search ... " name="search"/>
+                <img className="sidelogoAF" style={{marginRight:'200px'}} src={require('../../../images/logo.png')}/> 
+                {/* <input className="form-control searchinputAF" type="text" placeholder="Search ... " name="search"/> */}
 
                 <Link to='/chatMes' >
                  <figure>
@@ -290,12 +301,12 @@ class studentAfterLogin extends Component {
                     </figure>
                     </Link>
 
-                    {/* <Link to="/stuReminder" >
+                    <Link to="/studentAchievements" >
                     <figure>
-                        <img style={{width:'auto' , height:'25px'}} src={require('../../../images/rem.jpg')} />
-                        <figcaption><b style={{color: 'white' , fontSize:'11px'}} > Reminder </b> </figcaption>
+                        <img style={{width:'auto' , height:'25px'}} src={require('../../../images/award.png')} />
+                        <figcaption><b style={{color: 'white' , fontSize:'11px'}} > Achievements </b> </figcaption>
                     </figure>
-                    </Link> */}
+                    </Link>
 
                     <Link to="/stuSendComplain" >
                     <figure >
@@ -325,8 +336,8 @@ class studentAfterLogin extends Component {
                     </figure>
                     </Link>
 
-                    <Link to='/' >
-                    <figure>
+                    <Link  >
+                    <figure onClick={()=>this.signout()}>
                         <img src={require('../../../images/logoff.png')}  style={{width:'auto' , height:'25px'}}/>
                         <br/>
                         <figcaption> <b style={{color:'white' , fontSize:'11px'}}> Signout </b> </figcaption>
@@ -433,7 +444,9 @@ function mapStateToProp(state) {
   }
   function mapDispatchToProp(dispatch) {
     return ({
-        //  getUserinfo : (info)=>{ dispatch(SignupDetail(info))}
+    sInfo : (info)=>{ dispatch(StudentDetail(info))},
+    dInfo : (info4)=>{ dispatch(DynamicData(info4))} ,
+    chatinfo : (info1)=>{ dispatch(ChatData(info1))}
     })
   }
   

@@ -27,7 +27,8 @@ componentDidMount(){
     if(this.props.accounttype=='Student'){
     }
    else{
-       console.log('change')
+    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+    this.props.history.push("/");
    }
 
     var data = this.props.details;

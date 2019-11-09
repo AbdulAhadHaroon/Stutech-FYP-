@@ -24,7 +24,7 @@ class StuReminder extends Component {
 
       firebase.database().ref(`/Notification`).on("value", (snapshot)=> {         
         snapshot.forEach((childSnapshot)=> {
-            if(childSnapshot.val().to == 'Teacher'){
+            if(childSnapshot.val().to == 'Student'){
             var obj = {
                 message : childSnapshot.val().message ,
                 date : childSnapshot.val().date

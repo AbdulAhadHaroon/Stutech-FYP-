@@ -6,7 +6,7 @@ import {Link} from 'react-router-dom';
 import '../../Loader/loader.css'
 import {Button} from '../../../components/button/button.js'
 // import { CustomErrorComponent } from 'custom-error';
-import {TeacherDetail , DynamicData , ChatData} from '../../../store/action/action.js';
+import {TeacherDetail , DynamicData , ChatData , OrganizationDetail} from '../../../store/action/action.js';
 import firebase from '../../../config/firebase.js'
 import { connect } from 'react-redux';
 import Swal from 'sweetalert2'
@@ -43,6 +43,8 @@ class TeacherAfterLogin extends Component {
       this.props.history.push("/");
      }
     }
+
+   
 
     showmyjobs(){
         const { myjobs } = this.state;
@@ -107,6 +109,7 @@ class TeacherAfterLogin extends Component {
     this.props.tInfo({})
     this.props.chatinfo({});
     this.props.dInfo({});
+    this.props.oInfo({})
     this.props.history.push('/')
     Swal.fire('Done' , 'Signout Successfully');
 
@@ -158,7 +161,7 @@ class TeacherAfterLogin extends Component {
       
 
   render() {
-    const {arr1 , arr2 , JobsNF , myjobs , progress} = this.state;
+    const {arr1 , arr2 , JobsNF , myjobs , progress } = this.state;
     //this.data();
     return (
         
@@ -205,8 +208,8 @@ class TeacherAfterLogin extends Component {
         <div className="topnavTAF  div1AF sticky-top scrollbar square scrollbar-lady-lips thin">
 
                
-                <img className="sidelogoTAF" src={require('../../../images/logo.png')}/> 
-                <input className="form-control searchinputTAF" type="text" placeholder="Search ... " name="search"/>
+                <img className="sidelogoTAF" style={{marginRight : '200px'}} src={require('../../../images/logo.png')}/> 
+                {/* <input className="form-control searchinputTAF" type="text" placeholder="Search ... " name="search"/> */}
 
                 <Link onClick={()=>this.openMessenger()} >
                   <figure>
@@ -384,6 +387,7 @@ function mapDispatchToProp(dispatch) {
   return ({
     tInfo : (info)=>{ dispatch(TeacherDetail(info))},
     dInfo : (info4)=>{ dispatch(DynamicData(info4))} ,
+    oInfo : (info4)=>{ dispatch(OrganizationDetail(info4))} ,
     chatinfo : (info1)=>{ dispatch(ChatData(info1))}
   })
 }

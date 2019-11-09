@@ -7,7 +7,7 @@ import {Button} from '../../../components/button/button.js'
 import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import Swal from 'sweetalert2'
-import {OrganizationDetail , DynamicData , ChatData} from '../../../store/action/action.js';
+import {OrganizationDetail , DynamicData , ChatData , TeacherDetail} from '../../../store/action/action.js';
 import firebase from '../../../config/firebase.js'
 import '../../Loader/loader.css'
 
@@ -28,14 +28,16 @@ class orgAfterLogin extends Component {
     
         this.state = {
            chatList:[] ,
-           message:[]
+           message:[] ,
+           myNotifications:[]
          }
       }
 
       componentDidMount(){
         // window.onpopstate = this.onBackButtonEvent;
         this.showMessage();
-        this.validation()
+        this.validation() ;
+        this.viewNotification()
       }
 
       // onBackButtonEvent(event) {
@@ -43,6 +45,23 @@ class orgAfterLogin extends Component {
       //   // this.history.go(1);
       //   Swal.fire('done' ,'press Signout button to exit or signout');
       //   }
+
+      viewNotification(){
+        const{myNotifications}=this.state;
+  
+        firebase.database().ref(`/Notification`).on("value", (snapshot)=> {         
+          snapshot.forEach((childSnapshot)=> {
+              if(childSnapshot.val().to == 'Organization'){
+              var obj = {
+                  message : childSnapshot.val().message ,
+                  date : childSnapshot.val().date
+               }
+              myNotifications.push(obj);
+              this.setState({myNotifications})
+            }
+          })
+      })
+     }
 
       validation(){
         var data = this.props.accounttype;
@@ -80,6 +99,7 @@ class orgAfterLogin extends Component {
         this.props.organizationInfo({})
         this.props.chatinfo({});
         this.props.dInfo({});
+        this.props.tInfo({});
         this.props.history.push('/')
         Swal.fire('Done' , 'Signout Successfully');
 
@@ -123,7 +143,7 @@ class orgAfterLogin extends Component {
       
 
   render() {
-    const { chatList , message } = this.state;
+    const { chatList , message , myNotifications} = this.state;
     
     return (
         
@@ -280,13 +300,14 @@ class orgAfterLogin extends Component {
                  <h6 className="sticky-top h4smdivORG"> <b> Notification  </b> </h6>
                  <hr/>
                  {
-                   message.map((val , index ) => {
+                   myNotifications.map((val , index ) => {
                     return(
                       <div className="row scrollbar square scrollbar-lady-lips thin" style={{border:'solid 2px rgb(27, 180, 207)' , padding:'5px' , margin:'15px' , height:'80px' , overflowY:'scroll'}}>
                     
                         {/* <img  style={{width:'80px' , height:'80px'}} src={require('../../../images/user.png')}/> */}
                         <p style={{marginLeft:'20px' , marginTop:'15px' , height:'60px'}}>
-                          <h6 style={{fontSize:'15px'}}><b>Notification: </b>{'Dear Organization ! On 15th November , there is exhibation of Final Year Project . If You are Interested in then contact to admin'}</h6>
+                          <h6 style={{fontSize:'15px'}}><b>Notification: </b>{val.message}</h6>
+                          <h6 style={{fontSize:'15px'}}><b>Date: </b>{val.date}</h6>
                           {/* <p style={{float:'right'}}> <Button text='chat' type='submit' /> </p> */}
                         </p>
                       </div>
@@ -313,7 +334,8 @@ function mapDispatchToProp(dispatch) {
   return ({ 
      organizationInfo :(info3)=>{ dispatch(OrganizationDetail(info3))} ,
      dInfo : (info4)=>{ dispatch(DynamicData(info4))} ,
-     chatinfo : (info)=>{ dispatch(ChatData(info))}
+     chatinfo : (info)=>{ dispatch(ChatData(info))} ,
+     tInfo :  (info)=>{ dispatch(TeacherDetail(info))} ,
   })
 }
 
