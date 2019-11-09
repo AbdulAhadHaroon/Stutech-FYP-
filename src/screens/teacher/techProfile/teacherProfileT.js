@@ -114,15 +114,15 @@ class Teacherprofile extends Component {
     }
     else{
     
-        firebase.auth().signInWithEmailAndPassword( data.email , p1)
+        firebase.auth().signInWithEmailAndPassword(data.email , p1)
             .then(function(user) {
     
                 firebase.auth().currentUser.updatePassword(p2).then(function(){
                     firebase.database().ref("Users/"+data.id).update({pass:p2});
                    
-                    document.getElementById('pass1').value=" ";
-                    document.getElementById('pass2').value=" " ; 
-                    document.getElementById('pass3').value=" ";
+                    // document.getElementById('pass1').value=" ";
+                    // document.getElementById('pass2').value=" " ; 
+                    // document.getElementById('pass3').value=" ";
                    
                     Swal.fire ('Done' , 'Password Updated Successfully');
                 

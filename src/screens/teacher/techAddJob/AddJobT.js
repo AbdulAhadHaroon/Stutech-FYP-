@@ -144,7 +144,8 @@ class TeacherAddJob extends Component {
                     image :  downloadURL ,
                     workType : workType ,
                     jobType : jobType ,
-                    category : category
+                    category : category,
+                    from : 'Teacher'
                   }
         
                   skey.set(jobObj); 

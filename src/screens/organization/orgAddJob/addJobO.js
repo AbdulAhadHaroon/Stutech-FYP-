@@ -144,7 +144,8 @@ else{
             image :  downloadURL ,
             workType : workType ,
             jobType : jobType ,
-            category : category
+            category : category,
+            from: 'Organization'
           }
 
           skey.set(jobObj); 

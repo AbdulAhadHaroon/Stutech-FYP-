@@ -21,6 +21,20 @@ class TeachViewProfile extends Component {
     }
   }
 
+  componentDidMount(){
+    this.validation()
+  }
+
+  validation(){
+    var data = this.props.accounttype;
+  if(data.includes('Teacher')){
+    this.props.history.index=0;
+  }else{
+    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+    this.props.history.push("/");
+  }
+  }
+
   // addData(){
   //     const{skills , achievements}=this.state;
   //      skills.push({ id:'awexgbt' , skill:'Java'})
@@ -82,7 +96,7 @@ class TeachViewProfile extends Component {
 
 
                     <br/>
-                    <h6> <b style={{color:'rgb(47, 174, 212)'}}> Qualifactions </b> </h6>
+                    <h6> <b style={{color:'rgb(47, 174, 212)'}}> Qualifactions : </b> <b> {this.props.details.qualification} </b> </h6>
                     <p>
                      {/* {
                      achievements.map((val , index ) => {
@@ -96,8 +110,6 @@ class TeachViewProfile extends Component {
                     })
                     }                        */}
 
-                    <br/>
-                      <b style={{fontSize:'20px' , marginLeft:'10%'  , fontSize:'14px'}}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:{this.props.details.qualification}</b>{}<br/>
                     </p>
 
                    

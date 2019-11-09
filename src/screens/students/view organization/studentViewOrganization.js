@@ -18,6 +18,7 @@ class StuViewOrg extends Component {
         myOrganization:[] ,
         dataIndex : null,
         open: false,
+        fdata : 'softwarehouse'
     }
   }
 
@@ -90,6 +91,43 @@ class StuViewOrg extends Component {
     this.setState({ open: false });
   };
 
+  filter(){
+  const {fdata , myOrganization} = this.state;
+
+  while(myOrganization.length>0){
+    myOrganization.splice(0,1);
+    this.setState({ myOrganization })
+  } 
+
+
+    
+  firebase.database().ref("/Users").orderByChild("accountType").equalTo("Organization").on("value", (snapshot)=> {
+   
+   if(snapshot.exists()){
+      snapshot.forEach((childSnapshot)=> {
+      var data = childSnapshot.val();
+      if(data.orgType == fdata)
+      console.log(data.orgType , fdata)
+      var orgObj = {
+        orgName : data.name ,
+        address : data.address ,
+        email : data.email ,
+        id : data.id ,
+        logo : data.imgURL ,
+        type : data.orgType ,
+        number : data.ph_no ,
+        websiteLink : data.webLink ,
+        detail : data.detail
+       }
+       myOrganization.push(orgObj)
+       this.setState({myOrganization})
+    })
+  }else{
+    Swal.fire('Oops' , `No ${fdata} Organization Found` , 'error')
+  }
+  })    
+  }
+
 
   render(){
       const {myOrganization , dataIndex , open} = this.state;
@@ -103,17 +141,17 @@ class StuViewOrg extends Component {
           
           <div className="form-group mx-1">
             <label style={{fontSize:'12px'}} >Organization Type</label>
-            <select style={{fontSize:'12px' , height:'30px'}}  className="form-control">
-              <option style={{fontSize:'12px'}}  value="software_house">Software House</option>
-              <option style={{fontSize:'12px'}}  value="corporate">Corporate</option>
-              <option style={{fontSize:'12px'}}  value="insurance">Insurance</option>
-              <option style={{fontSize:'12px'}}  value="networking">Networking</option>
-              <option style={{fontSize:'12px'}}  value="other">Other</option>
+            <select style={{fontSize:'12px' , height:'30px'}}  className="form-control"  onChange={(e)=>this.setState({fdata:e.target.value})} >
+            <option style={{fontSize:'12px'}}  value="softwarehouse">Software House</option>
+            <option style={{fontSize:'12px'}}  value="corporate">Corporate</option>
+            <option style={{fontSize:'12px'}}  value="insurance">Insurance</option>
+            <option style={{fontSize:'12px'}}  value="networking">Networking</option>
+            <option style={{fontSize:'12px'}}  value="other">Other</option>
             </select>
           </div>
 
             <div className="row">
-              <Button style={{margin:'2px auto'}} type="submit" text="Apply" />
+              <Button style={{margin:'2px auto'}} onClick={()=>{this.filter()}} type="submit" text="Apply" />
               &nbsp;
               <Button  style={{margin:'2px auto'}} type="submit" text="Clear All" />
             </div>
@@ -132,11 +170,11 @@ class StuViewOrg extends Component {
                 <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
                   </Nav> 
-                  <Form inline style={{marginRight:'10%' , marginLeft:'10%' , textAlign:'center'}}>
+                  {/* <Form inline style={{marginRight:'10%' , marginLeft:'10%' , textAlign:'center'}}>
                     <FormControl style={{ width:'400px' , height:'8%' , fontSize:'10px' }}  type="text" placeholder="Search" className="mr-sm-2" />
-                  </Form>
-                  <img onClick={this.onOpenModal} data-toggle="modal" data-target="#exampleModal"  style={{width:'20px' , height:'20px' , float:'right'}} src={require('../../../images/filter.png')}  />
-                </Navbar.Collapse>
+                  </Form> */}
+                  {/* <img onClick={this.onOpenModal} data-toggle="modal" data-target="#exampleModal"  style={{width:'20px' , height:'20px' , float:'right'}} src={require('../../../images/filter.png')}  />
+              */}  </Navbar.Collapse> 
           </Navbar>
 
               <div  className="col-md-14 row">
@@ -170,7 +208,7 @@ class StuViewOrg extends Component {
               <div id="adata" className="col-md-6" style={{textAlign:'center' , margin:'10px' }}>
 
                 {
-                     myOrganization.map((val , ind)=>{
+                    myOrganization.length>0 &&  myOrganization.map((val , ind)=>{
                          return(
                             <div  className="viewDivVOT">
                                <p style={{textAlign:'center' , fontSize:'12px'}}> <img style={{width:'40px' , height:'40px'}} src={val.logo}/> <b> {val.orgName}</b> </p>

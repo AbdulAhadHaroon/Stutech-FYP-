@@ -8,6 +8,7 @@ import {Button} from '../../../components/button/button.js'
 import { Navbar , Nav , NavDropdown , Form , FormControl } from 'react-bootstrap';
 import Modal from 'react-responsive-modal';
 import firebase from '../../../config/firebase.js'
+import { connect } from 'react-redux';
 
 class TechViewOrg extends Component {
   
@@ -24,7 +25,18 @@ class TechViewOrg extends Component {
 
   
   componentDidMount(){
+    this.validation()
     this.addData();
+  }
+
+  validation(){
+    var data = this.props.accounttype;
+  if(data.includes('Teacher')){
+    this.props.history.index=0;
+  }else{
+    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+    this.props.history.push("/");
+  }
   }
 
   addData(){
@@ -142,9 +154,9 @@ class TechViewOrg extends Component {
                 <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
                   </Nav> 
-                  <Form inline style={{marginRight:'10%' , marginLeft:'10%' , textAlign:'center'}}>
+                  {/* <Form inline style={{marginRight:'10%' , marginLeft:'10%' , textAlign:'center'}}>
                     <FormControl style={{ width:'400px' , height:'8%' , fontSize:'10px' }}  type="text" placeholder="Search" className="mr-sm-2" />
-                  </Form>
+                  </Form> */}
                   <img onClick={this.onOpenModal} data-toggle="modal" data-target="#exampleModal"  style={{width:'20px' , height:'20px' , float:'right'}} src={require('../../../images/filter.png')}  />
                 </Navbar.Collapse>
           </Navbar>
@@ -203,4 +215,16 @@ class TechViewOrg extends Component {
 
 }
 
-export default TechViewOrg;
+function mapStateToProp(state) {
+  return ({
+    details: state.root.teacherInfo ,
+    accounttype : state.root.accountType
+  })
+}
+function mapDispatchToProp(dispatch) {
+  return ({
+      //  getUserinfo : (info)=>{ dispatch(SignupDetail(info))}
+  })
+}
+
+export default connect(mapStateToProp, mapDispatchToProp)(TechViewOrg);

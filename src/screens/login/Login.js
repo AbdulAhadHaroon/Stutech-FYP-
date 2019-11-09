@@ -71,7 +71,7 @@ class Login extends Component {
   var ans = document.getElementById('secans').value;
    console.log(ans , fans )
   if(fans.toLowerCase()==ans.toLowerCase()){
-    axios.post('http://localhost:5000/send', {
+    axios.post('https://stutech2019.herokuapp.com/send', {
       from , to , subject , message
     }).then((res) => {
       console.log(res.statusText);
@@ -175,6 +175,7 @@ class Login extends Component {
             id : data.id ,
             imgURL : data.imgURL ,
             number : data.ph_no ,
+            qualification : data.qualification
            }
 
            this.setState({progress:false})

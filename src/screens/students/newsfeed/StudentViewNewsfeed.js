@@ -176,7 +176,8 @@ class StudentViewNewsFeed extends Component {
        type : d.jobType ,
        cid : d.cid ,
        category : d.category ,
-       subject : d.subject
+       subject : d.subject ,
+       from : d.from
       }
       JobsNF.push(obj);
       allNF.push(obj)
@@ -211,7 +212,8 @@ showCategdata(val1){
         type : val.type ,
         cid : val.cid ,
         category : val.category ,
-        subject : val.subject
+        subject : val.subject , 
+        from : val.from
        }
        JobsNF.push(obj)
        this.setState({JobsNF})
@@ -236,8 +238,9 @@ addFav(i){
             type : JobsNF[i].type ,
             cid : JobsNF[i].cid ,
             category : JobsNF[i].category ,
-            subject : JobsNF[i].subject
-    }
+            subject : JobsNF[i].subject ,
+            from : JobsNF[i].from || 'undefined'
+          }
  
   skey.set(obj);
   Swal.fire('Done' , 'Add Favourite Successfully')
@@ -320,13 +323,13 @@ addFav(i){
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
               </Nav> 
-              <Form inline style={{marginRight:'7%' , marginLeft:'7%' , textAlign:'center'}}>
+              {/* <Form inline style={{marginRight:'7%' , marginLeft:'7%' , textAlign:'center'}}>
                 <FormControl style={{ width:'400px' , height:'8%' , fontSize:'10px' }}  type="text" placeholder="Search" className="mr-sm-2" />
-                {/* <Button text="Search" /> */}
+                 <Button text="Search" /> 
               </Form>
               <Nav.Link> 
                    <img onClick={this.onOpenModal} data-toggle="modal" data-target="#exampleModal"  style={{width:'20px' , height:'20px' , float:'right'}} src={require('../../../images/filter.png')}  />
-              </Nav.Link>
+              </Nav.Link> */}
             </Navbar.Collapse>
           </Navbar>
 
@@ -378,10 +381,11 @@ addFav(i){
                                       </figure>
 
                                       &nbsp; &nbsp;
-                                      <figure style={{display:'inline-block'}} onClick={(i)=>this.viewProf(index)}>
-                                          <img  style={{width:'20px' , height:'20px'}} src={require('../../../images/user.jpg')}/> 
-                                          <figcaption  style={{fontSize:'10px'}}><b> Profile</b></figcaption>
-                                      </figure>
+                                      {(val.from == 'Organization' || val.from == undefined)  && <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
+                                        <img  style={{width:'25px' , height:'25px'}} src={require('../../../images/user.jpg')}/> 
+                                        <figcaption style={{fontSize:'10px'}}><b> Profile</b></figcaption>
+                                    </figure> }
+
 
                                       &nbsp; &nbsp;
                                       <figure style={{display:'inline-block'}} onClick={(i)=>this.addFav(index)}>

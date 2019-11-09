@@ -44,7 +44,8 @@ addData(){
      type : d.type ,
      cid : d.cid ,
      category : d.category ,
-     subject : d.subject
+     subject : d.subject ,
+     from : d.from
     }
     myFav.push(obj);
     this.setState({myFav})
@@ -78,9 +79,14 @@ deleteFav(i){
 }
 
 viewProf(i){
- const {myFav} = this.state;
- localStorage.setItem('orgID' , myFav[i].cid);
- this.props.history.push('./stuViewOrg')
+    const {myFav} = this.state;
+    if(myFav[i].from == 'Teacher'){
+       Swal.fire('Oops' , 'You Cannot View Profile Teacher' , 'error')
+    }
+    else {
+    localStorage.setItem('orgID' , myFav[i].cid);
+    this.props.history.push('./stuViewOrg')
+   }
 }
  
 
@@ -124,10 +130,11 @@ viewProf(i){
                                             
                                         <div style={{textAlign:'center'}}>                                        
                                             <hr/>
-                                            <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
-                                            <img src={require('../../../images/profile.png')}  style={{width:'23px' , height:'23px'}}/>
-                                            <figcaption style={{fontSize:'10px'}} ><b>Profile</b></figcaption>
-                                            </figure>
+                                            {(val.from == 'Organization' || val.from == undefined)  && <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
+                                            <img  style={{width:'25px' , height:'25px'}} src={require('../../../images/user.jpg')}/> 
+                                            <figcaption style={{fontSize:'10px'}}><b> Profile</b></figcaption>
+                                           </figure> }
+            
                                              &nbsp; &nbsp;
 
                                             <figure style={{display:'inline-block'}} onClick={(e)=>this.deleteFav(index)}>

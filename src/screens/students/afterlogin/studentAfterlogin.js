@@ -6,7 +6,9 @@ import {Link} from 'react-router-dom';
 import {Button} from '../../../components/button/button.js'
 import firebase from '../../../config/firebase.js'
 import { connect } from 'react-redux';
+import '../../Loader/loader.css'
 import Swal from 'sweetalert2'
+import Modal from 'react-responsive-modal';
 // import { CustomErrorComponent } from 'custom-error';
 
 
@@ -17,17 +19,43 @@ class studentAfterLogin extends Component {
         super(props);
     
         this.state = {
-          arr1:[] ,
-          arr2:[] ,
-          JobsNF:[]
+          JobsNF:[],
+          reminder:[] , 
+          progress : true ,
+          rname : '' ,
+          rsubject : '' ,
+          rdate : '' ,
+          rtime : '' ,
+          open: false,         
         }
-        this.data = this.data.bind(this);
         this.Recentjob = this.Recentjob.bind(this)
       }
 
       componentDidMount(){
          this.validation()
           this.addData();
+          this.showReminder()
+      }
+
+      showReminder(){
+          const { reminder } = this.state;
+          var data = this.props.details;
+
+          firebase.database().ref(`reminder/${data.id}`).on("value", (snapshot)=> {
+            
+            if(snapshot.exists()){
+            snapshot.forEach((childSnapshot) => {
+                var obj = {
+                    name : childSnapshot.val().name ,
+                    subject : childSnapshot.val().subject ,
+                    date : childSnapshot.val().date ,
+                    time : childSnapshot.val().time
+                }
+                reminder.push(obj);
+                this.setState({reminder})  
+            })
+          }
+        })
       }
 
       validation(){
@@ -40,10 +68,22 @@ class studentAfterLogin extends Component {
        }
       }
 
+      onOpenModal(val) {
+        const {rsubject , rname} = this.state;
+        this.setState({ open: true  , rsubject:val.subject || '' , rname:val.orgName || ''});
+      };
+     
+      onCloseModal = () => {
+        this.setState({ open: false });
+      };
+    
+
     addData(){
         const {JobsNF} = this.state;
+        var data = this.props.details;
+        console.log('asad' , data.number)
           
-        firebase.database().ref(`/Jobs`).on("value", (snapshot)=> {
+        firebase.database().ref(`/Jobs`).limitToLast(10).on("value", (snapshot)=> {
          
           snapshot.forEach((childSnapshot)=> {
            var d = childSnapshot.val();
@@ -51,17 +91,18 @@ class studentAfterLogin extends Component {
            id : d.id ,
            logo : d.clogo ,
            Jimg : d.image ,
-           orgName : d.cemail ,
+           orgName : d.cname ,
            description : d.detail ,
            date : d.date ,
            experience : d.workType,
            type : d.jobType ,
            cid : d.cid ,
            category : d.category ,
-           subject : d.subject
+           subject : d.subject ,
+           from : d.from
           }
           JobsNF.push(obj);
-          this.setState({JobsNF})
+          this.setState({JobsNF , progress:false})
           })
         })
     }  
@@ -83,7 +124,8 @@ class studentAfterLogin extends Component {
                 type : JobsNF[i].type ,
                 cid : JobsNF[i].cid ,
                 category : JobsNF[i].category ,
-                subject : JobsNF[i].subject
+                subject : JobsNF[i].subject ,
+                from : JobsNF[i].from || 'undefined'
         }
      
       skey.set(obj);
@@ -92,45 +134,90 @@ class studentAfterLogin extends Component {
 
     viewProf(i){
         const {JobsNF} = this.state;
+        if(JobsNF[i].from == 'Teacher'){
+           Swal.fire('Oops' , 'You Cannot View Profile Teacher' , 'error')
+        }
+        else {
         localStorage.setItem('orgID' , JobsNF[i].cid);
         this.props.history.push('./stuViewOrg')
        }
-
-      data(){
-        const {arr1 , arr2 , JobsNF} = this.state;
-
-        // JobsNF.push({ id:'awexgbt' ,logo:require('../../../images/ssuet.png') , Jimg:require('../../../images/j1.jpg') , orgName:'SSUET' , address:'nipa , Gulshan , Karachi' , subject:'Seminar on AI' , description:'The Distant Future - Ai and robots are far behind computers but it’ll only be a matter of time before they become as regular as cell phones are in our everyday life. - Ray Kurzweil has used Moore’s law (which describes the relentless exponential improvement in digital technology with uncanny accuracy) to calculate that desktop computers will have the same processing power as human brains by the year 2029, and that by 2045 artificial intelligence will reach a point where it is able to improve itself at a rate that far exceeds anything conceivable in the past. - Several futurists and science fiction writers have predicted that human beings and machines will merge in the future into Cyborgs that are more capable and powerful than either. This idea, called trans-humanism.' , date:'12-7-19' , websiteLink : 'ssuet.edu.pk' , type:'Seminar' })
-        // JobsNF.push({ id:'1we4hji' ,logo:require('../../../images/oracle.png') , Jimg:require('../../../images/j2.jpg') , orgName:'App Bakers' , address:'near Expo Centre , Gulshan , Karachi' , subject:'Job Available for full stack Developer' , description:'We are looking for a highly skilled computer programmer who is comfortable with both front and back end programming. Full Stack Developers are responsible for developing and designing front end web architecture, ensuring the responsiveness of applications and working alongside graphic designers for web design features, among other duties. Full Stack Developers will be required to see out a project from conception to final product, requiring good organizational skills and attention to detail.' , date:'30-6-19' , websiteLink : 'www.AppBakers.com' , type:'Job' })
-        // JobsNF.push({ id:'dfmk30f' ,logo:require('../../../images/decima.png') , orgName:'Decima.AI' , Jimg:require('../../../images/j3.png') , address:'DHA phase 5 , Karachi' , subject:'Internships Available for full Software Engineer' , description:'We are looking for a  skilled computer programmer who is comfortable with java programming. Please Send your resume at Decima@gmail.com ' , date:'27-6-19' , websiteLink : 'www.DecimaAI.com' , type:'internship' })
-    
-        arr1.push({name:'Oracle' , for : 'Computer Science' , type:'job' , Date:'10/1/19' , img:require('../../../images/oracle.png') })
-        arr1.push({name:'SSUET' , for : 'Software' , type:'intern', Date:'12/7/12' , img:require('../../../images/ssuet.png') })
-        arr1.push({name:'Decima' , for : 'Computer Engg' , type:'Seminar' , Date:'12/8/2020' , img:require('../../../images/decima.png') })
-        arr1.push({name:'Oracle' , for : 'Computer Science' , type:'job' , Date:'10/1/19' , img:require('../../../images/oracle.png') })
-        arr1.push({name:'SSUET' , for : 'Software' , type:'intern', Date:'12/7/12' , img:require('../../../images/ssuet.png')})
-        arr1.push({name:'Decima' , for : 'Computer Engg' , type:'Seminar' , Date:'12/8/2020' , img:require('../../../images/decima.png')})
-
-        arr2.push({logo:require('../../../images/reminder1.png') , name : 'SSUET' , subject:'AI Seminar held on tuesday. ' , Date:'12-4-2019' })
-        arr2.push({logo:require('../../../images/reminder1.png') , name : 'NIC' , subject:'New Course Launched' , Date:'23-3-2019' })
-        arr2.push({logo:require('../../../images/reminder1.png') , name : 'AppMakers' , subject:'Internship Available for SE' , Date:'23-7-2019' })
-        arr2.push({logo:require('../../../images/reminder1.png') , name : 'Decima' , subject:'Job Available for Web Development' , Date:'12-6-2019' })
-        
     }
 
+     
     Recentjob(){
         document.getElementById('div3id').innerHTML = null;
         document.getElementById('div4id').innerHTML = null;
         this.setState({})
     }
       
+   setReminder(){
+    this.setState({open:true})   
+    const {rname , rsubject , rdate , rtime , open} = this.state;
+    var data = this.props.details;
+
+    // var name = rname;
+    // var subject = rsubject;
+    // var date = rdate;
+    // var time = rtime;
+
+
+    if(rname.length<2){
+        Swal.fire('Oops' , 'Please Write Name Correctly' , 'error')
+    }else if (rsubject.length<2){
+        Swal.fire('Oops' , 'Please Write Subject Correctly' , 'error')
+    }
+    else if(rdate.length<10 || rdate.length>10){
+        Swal.fire('Oops' , 'Please Write date (DD-MM-YYYY) in this Format' , 'error')
+    }else if(rtime.length<8 || rtime.length>8){
+        Swal.fire('Oops' , 'Please Write time in 24 Hours (HH-MM-SS) in this Format' , 'error')
+    }
+    else {
+        var skey = firebase.database().ref(`reminder/${data.id}`).push();
+         var obj = {
+            id : skey.key ,
+            name : rname ,
+            subject : rsubject ,
+            date : rdate ,
+            time : rtime 
+         }
+         skey.set(obj);
+
+         var xhr = new XMLHttpRequest()
+          xhr.addEventListener('load', () => {
+              console.log(xhr.responseText)
+                })
+         xhr.open('GET', `http://smartsms.pk/json?api_token= 6ee650fde65d4b1a8136875e0190358ecb634db168688b66305b2d88ffda&api_secret=shahjahan123&to=${data.number}&from=Brand&date=${rdate}&time=${rtime}&message=You+set+a+reminder+for+${rsubject}+on+this+Date+${rdate}`)
+         xhr.send()
+
+         Swal.fire('Done' , 'Reminder Set Successfully')
+        this.setState({open:false , rdate:'' , rtime:''  , rname:'' , rsubject:''})
+    }
+   } 
       
 
   render() {
-    const {arr1 , arr2 , JobsNF} = this.state;
-    this.data();
+    const {arr1 , arr2 , JobsNF , progress , open , rsubject , rname , rdate , rtime , reminder} = this.state;
     return (
         
       <div style={{minWidth:'370px' , margin:'1px auto'}}>
+
+
+        <Modal open={open} onClose={this.onCloseModal} center>
+          <div  style={{borderRadius:'10px' , padding:'20px'}}>
+          <h6 style={{color:'rgb(20, 194, 224)' , textAlign:'center'}} > <b> SET YOUR REMINDER </b> </h6>
+          <hr/>
+
+          <p> Name :  <input className="form-control" value={rname} onChange={(e)=>this.setState({rname : e.target.value}) }  /> </p> 
+          <p> Subject : <input className="form-control" value={rsubject} onChange={(e)=>this.setState({rsubject : e.target.value}) }  /> </p>
+          <p> Date : <input className="form-control"   placeholder="Write date (DD-MM-YYYY)" value={rdate} onChange={(e)=>this.setState({rdate : e.target.value}) } /> </p>
+          <p> Time :  <input className="form-control"   placeholder="Time in 24 Hours (HH-MM-SS)" value={rtime} onChange={(e)=>this.setState({rtime : e.target.value}) } />  </p>  
+
+            <div className="row">
+              <Button style={{margin:'2px auto'}} onClick={()=>{this.setReminder()}} type="submit" text="Set Reminder" />
+            </div>
+
+          </div>
+        </Modal>
 
         <div className="sidenavAF">
             <p  className="SAFp" > <img  className="SAFuimg" src={this.props.details.imgURL}  />  </p>
@@ -153,13 +240,12 @@ class studentAfterLogin extends Component {
                  <div className="scrollbar square scrollbar-lady-lips thin" style={{overflowY:'scroll' , height:'75vh'}}> 
                     <div id="div4id">
                     {
-                        arr2.map((val , ind)=>{
+                        reminder.map((val , ind)=>{
                         return(
                            <div className="RemindDivAF">
-                              <p style={{textAlign:'center' , fontSize:'12px'}}> <img style={{width:'40px' , height:'40px'}} src={val.logo}/></p>
+                              <p style={{textAlign:'center' , fontSize:'12px'}}> <img style={{width:'40px' , height:'40px'}} src={require('../../../images/reminder1.png')}/></p>
                               <hr/>
-                              <p  style={{color:'black' , fontSize:'13px'}}>  {val.subject} <br/> <b> Venue : {val.name}</b>  <br/> <b> Date : {val.Date} </b> </p>
-                              {/* <button className="div4btnAF"> View Details</button>           */}
+                              <p  style={{color:'black' , fontSize:'13px'}}> <b> Name :  {val.name} </b> <br/> <b> Subject : {val.subject} </b>  <br/> <b> Date : {val.date} </b>  <br/> <b> Time :{val.time}  </b>  </p>         
                            </div>
                             )
                          })
@@ -248,6 +334,10 @@ class studentAfterLogin extends Component {
                     </Link>
         </div>
 
+        {progress &&  <div class='loaddiv'> <br/><br/>
+                    <div class="loader"></div>
+                    <p><b>Loading please wait</b></p>
+                  </div> }
        
 
                <div  className="mainAF">
@@ -295,16 +385,16 @@ class studentAfterLogin extends Component {
                              <div style={{textAlign:'center'}}>  
                              <hr/>
 
-                             <figure style={{display:'inline-block'}}>
+                             <figure style={{display:'inline-block'}} onClick={(e)=>this.onOpenModal(val)}>
                                 <img style={{width:'25px' , height:'25px'}} src={require('../../../images/rem.jpg')} />
                                 <figcaption style={{fontSize:'10px'}}><b> Reminder </b> </figcaption>
                             </figure>
 
                             &nbsp; &nbsp;
-                            <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
+                           {(val.from == 'Organization' || val.from == undefined)  && <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
                                 <img  style={{width:'25px' , height:'25px'}} src={require('../../../images/user.jpg')}/> 
                                 <figcaption style={{fontSize:'10px'}}><b> Profile</b></figcaption>
-                            </figure>
+                            </figure> }
 
                             &nbsp; &nbsp;
                             <figure style={{display:'inline-block'}} onClick={(e)=>this.addFav(index)}>

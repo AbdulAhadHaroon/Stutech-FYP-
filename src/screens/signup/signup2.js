@@ -209,9 +209,18 @@ class Signup2 extends Component {
        
       else{
 
+        firebase.database().ref("/Users").orderByChild("empID").equalTo(""+empID).on("value", (snapshot)=> {
+
+          if(snapshot.exists()){
+           Swal.fire('Oops' , 'Employe ID already Exist' , 'error')
+           this.setState({progress:false})
+          }
+ 
+          else{
+
         this.setState({progress:true})  
 
-      firebase.auth().createUserWithEmailAndPassword(email, pass).then((success)=>{
+       firebase.auth().createUserWithEmailAndPassword(email, pass).then((success)=>{
         // varible to create refrence of firebase storage
         var storageref = firebase.storage().ref("storage");
         // function for uploading file in firebase database
@@ -260,9 +269,10 @@ class Signup2 extends Component {
         Swal.fire('Oops...', ''+error.message, 'error')
        });
     }   
-    }
-
+    })
   }
+ }
+}
 
   
  render(){

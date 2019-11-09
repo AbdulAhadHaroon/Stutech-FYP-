@@ -3,8 +3,10 @@ import '../../../css/bootstrap.min.css';
 import './afterLoginT.css';
 import '../../../css/scrollbar.css';
 import {Link} from 'react-router-dom'; 
+import '../../Loader/loader.css'
 import {Button} from '../../../components/button/button.js'
 // import { CustomErrorComponent } from 'custom-error';
+import {TeacherDetail , DynamicData , ChatData} from '../../../store/action/action.js';
 import firebase from '../../../config/firebase.js'
 import { connect } from 'react-redux';
 import Swal from 'sweetalert2'
@@ -18,9 +20,10 @@ class TeacherAfterLogin extends Component {
         this.state = {
           arr1:[] ,
           arr2:[] ,
-          JobsNF:[]
+          JobsNF:[] ,
+          myjobs : [] ,
+          progress : true
         }
-        this.data = this.data.bind(this);
         this.Recentjob = this.Recentjob.bind(this)
       }
 
@@ -28,6 +31,7 @@ class TeacherAfterLogin extends Component {
       componentDidMount(){
         this.validation()
          this.addData();
+         this.showmyjobs();
      }
 
      validation(){
@@ -40,10 +44,41 @@ class TeacherAfterLogin extends Component {
      }
     }
 
+    showmyjobs(){
+        const { myjobs } = this.state;
+        var data = this.props.details;
+        firebase.database().ref(`/Jobs`).orderByChild("cid").equalTo(""+data.id).limitToLast(10).on("value", (snapshot)=> {
+         
+          snapshot.forEach((childSnapshot)=> {
+           var d = childSnapshot.val();
+          var obj = {
+           id : d.id ,
+           logo : d.clogo ,
+           Jimg : d.image ,
+           orgName : d.cname ,
+           description : d.detail ,
+           date : d.date ,
+           experience : d.workType,
+           type : d.jobType ,
+           cid : d.cid ,
+           category : d.category ,
+           subject : d.subject
+          }
+          myjobs.push(obj);
+          this.setState({myjobs})
+          })
+        })
+    }
+
+    openMessenger(){
+        this.props.chatinfo({});
+        this.props.history.push('/chatMes')
+      }
+
     addData(){
-      const {JobsNF} = this.state;
+      const {JobsNF , progress} = this.state;
         
-      firebase.database().ref(`/Jobs`).on("value", (snapshot)=> {
+      firebase.database().ref(`/Jobs`).limitToLast(10).on("value", (snapshot)=> {
        
         snapshot.forEach((childSnapshot)=> {
          var d = childSnapshot.val();
@@ -61,15 +96,31 @@ class TeacherAfterLogin extends Component {
          subject : d.subject
         }
         JobsNF.push(obj);
-        this.setState({JobsNF})
+        this.setState({JobsNF , progress:false})
         })
       })
   }  
 
+  signout(){
+
+    firebase.auth().signOut();
+    this.props.tInfo({})
+    this.props.chatinfo({});
+    this.props.dInfo({});
+    this.props.history.push('/')
+    Swal.fire('Done' , 'Signout Successfully');
+
+    
+  }
 
   addFav(i){
     const {JobsNF} = this.state;
     var data = this.props.details;
+
+    if(data.id == JobsNF[i].cid){
+        Swal.fire('Oops' , 'You Cannot Save Your Post as Favourite ' , 'error')
+    }else{
+
     var skey = firebase.database().ref("Favourite/"+data.empID).push();
     var obj = {
             id:skey.key,
@@ -87,6 +138,7 @@ class TeacherAfterLogin extends Component {
  
   skey.set(obj);
   Swal.fire('Done' , 'Add Favourite Successfully')
+ }
 }
 
 
@@ -97,28 +149,6 @@ class TeacherAfterLogin extends Component {
       }
 
 
-      data(){
-        const {arr1 , arr2 , JobsNF} = this.state;
-
-        JobsNF.push({ id:'awexgbt' ,logo:require('../../../images/ssuet.png') , Jimg:require('../../../images/j1.jpg') , orgName:'SSUET' , address:'nipa , Gulshan , Karachi' , subject:'Seminar on AI' , description:'The Distant Future - Ai and robots are far behind computers but it’ll only be a matter of time before they become as regular as cell phones are in our everyday life. - Ray Kurzweil has used Moore’s law (which describes the relentless exponential improvement in digital technology with uncanny accuracy) to calculate that desktop computers will have the same processing power as human brains by the year 2029, and that by 2045 artificial intelligence will reach a point where it is able to improve itself at a rate that far exceeds anything conceivable in the past. - Several futurists and science fiction writers have predicted that human beings and machines will merge in the future into Cyborgs that are more capable and powerful than either. This idea, called trans-humanism.' , date:'12-7-19' , websiteLink : 'ssuet.edu.pk' , type:'Seminar' })
-        JobsNF.push({ id:'1we4hji' ,logo:require('../../../images/oracle.png') , Jimg:require('../../../images/j2.jpg') , orgName:'App Bakers' , address:'near Expo Centre , Gulshan , Karachi' , subject:'Job Available for full stack Developer' , description:'We are looking for a highly skilled computer programmer who is comfortable with both front and back end programming. Full Stack Developers are responsible for developing and designing front end web architecture, ensuring the responsiveness of applications and working alongside graphic designers for web design features, among other duties. Full Stack Developers will be required to see out a project from conception to final product, requiring good organizational skills and attention to detail.' , date:'30-6-19' , websiteLink : 'www.AppBakers.com' , type:'Job' })
-        JobsNF.push({ id:'dfmk30f' ,logo:require('../../../images/decima.png') , orgName:'Decima.AI' , Jimg:require('../../../images/j3.png') , address:'DHA phase 5 , Karachi' , subject:'Internships Available for full Software Engineer' , description:'We are looking for a  skilled computer programmer who is comfortable with java programming. Please Send your resume at Decima@gmail.com ' , date:'27-6-19' , websiteLink : 'www.DecimaAI.com' , type:'internship' })
-    
-        arr1.push({name:'Oracle' , for : 'Computer Science' , type:'job' , Date:'10/1/19' , img:require('../../../images/oracle.png') })
-        arr1.push({name:'SSUET' , for : 'Software' , type:'intern', Date:'12/7/12' , img:require('../../../images/ssuet.png') })
-        arr1.push({name:'Decima' , for : 'Computer Engg' , type:'Seminar' , Date:'12/8/2020' , img:require('../../../images/decima.png') })
-        arr1.push({name:'Oracle' , for : 'Computer Science' , type:'job' , Date:'10/1/19' , img:require('../../../images/oracle.png') })
-        arr1.push({name:'SSUET' , for : 'Software' , type:'intern', Date:'12/7/12' , img:require('../../../images/ssuet.png')})
-        arr1.push({name:'Decima' , for : 'Computer Engg' , type:'Seminar' , Date:'12/8/2020' , img:require('../../../images/decima.png')})
-
-        arr2.push({logo:require('../../../images/ssuet.png') , name : 'SSUET' , subject:'AI Seminar held on tuesday. ' , Date:'12-4-2019' })
-        arr2.push({logo:require('../../../images/oracle.png') , name : 'Axiom' , subject:'New Course Launched' , Date:'23-3-2019' })
-        arr2.push({logo:require('../../../images/oracle.png') , name : 'AppBakers' , subject:'Internship Available for SE' , Date:'23-7-2019' })
-        arr2.push({logo:require('../../../images/oracle.png') , name : 'Decima.AI' , subject:'Job Available for Web Development' , Date:'12-6-2019' })
-        arr2.push({logo:require('../../../images/oracle.png') , name : 'MakSoft' , subject:'Seminar on android' , Date:'11-5-2019' })
-    
-    }
-
     Recentjob(){
         document.getElementById('div3id').innerHTML = null;
         document.getElementById('div4id').innerHTML = null;
@@ -128,7 +158,7 @@ class TeacherAfterLogin extends Component {
       
 
   render() {
-    const {arr1 , arr2 , JobsNF} = this.state;
+    const {arr1 , arr2 , JobsNF , myjobs , progress} = this.state;
     //this.data();
     return (
         
@@ -146,22 +176,21 @@ class TeacherAfterLogin extends Component {
              
         </div>
 
-    {/* <div className="div2TAF" >      
+    <div className="div2TAF" >      
             <div>
-                <h6 style={{textAlign:'center' , color:'rgb(47, 174, 212)'}}><b>Reminder</b></h6> 
+                <h6 style={{textAlign:'center' , color:'rgb(47, 174, 212)'}}><b>My Post</b></h6> 
             </div>
             
             <div  className="div4TAF ">
                  <div className="scrollbar square scrollbar-lady-lips thin" style={{overflowY:'scroll' , height:'75vh'}}> 
                     <div id="div4id">
                     {
-                        arr2.map((val , ind)=>{
+                        myjobs.map((val , ind)=>{
                         return(
                            <div className="RemindDivTAF">
-                              <p style={{textAlign:'center' , fontSize:'12px'}}> <img style={{width:'40px' , height:'40px'}} src={val.logo}/> <b> {val.name}</b> </p>
+                              <p style={{textAlign:'center' , fontSize:'12px'}}> <img style={{width:'100px' , height:'70px'}} src={val.logo}/> </p>
                               <hr/>
-                              <p  style={{color:'gray' , fontSize:'11px'}}>  {val.subject} <br/> Date : <b style={{color:'black'}}>{val.Date} </b> </p>
-                              <button className="div4btnTAF"> View Details</button>          
+                              <p  style={{color:'gray' , fontSize:'11px'}}>   Subject : {val.subject} <br/> Category : {val.category} <br/> Experience : {val.experience} <br/>  Date : <b style={{color:'black'}}>{val.date} </b> </p>          
                            </div>
                             )
                          })
@@ -169,7 +198,7 @@ class TeacherAfterLogin extends Component {
                     </div>
                  </div>
             </div>      
-        </div> */}
+        </div>
 
           
 
@@ -179,7 +208,7 @@ class TeacherAfterLogin extends Component {
                 <img className="sidelogoTAF" src={require('../../../images/logo.png')}/> 
                 <input className="form-control searchinputTAF" type="text" placeholder="Search ... " name="search"/>
 
-                <Link to='/chatMes' >
+                <Link onClick={()=>this.openMessenger()} >
                   <figure>
                     <img src={require('../../../images/mess.jpg')}  style={{width:'23px' , height:'23px'}}/>
                     <figcaption ><b style={{color:'white' , fontSize:'10px'}}>Chats</b></figcaption>
@@ -242,16 +271,22 @@ class TeacherAfterLogin extends Component {
                     </figure>
                     </Link>
 
-                    <Link to='/' >
-                    <figure>
+                    
+                    <Link > 
+                    <figure onClick={()=>this.signout()} >
                         <img src={require('../../../images/logoff.png')} style={{width:'23px' , height:'23px'}}/>
                         <br/>
                         <figcaption><b style={{color:'white' , fontSize:'10px'}}> Signout </b> </figcaption>
                     </figure>
                     </Link>
+                    
         </div>
 
        
+        {progress &&  <div class='loaddiv'> <br/><br/>
+                    <div class="loader"></div>
+                    <p><b>Loading please wait</b></p>
+                  </div> }
 
                <div  className="mainTAF">
                {
@@ -347,7 +382,9 @@ function mapStateToProp(state) {
 }
 function mapDispatchToProp(dispatch) {
   return ({
-      //  getUserinfo : (info)=>{ dispatch(SignupDetail(info))}
+    tInfo : (info)=>{ dispatch(TeacherDetail(info))},
+    dInfo : (info4)=>{ dispatch(DynamicData(info4))} ,
+    chatinfo : (info1)=>{ dispatch(ChatData(info1))}
   })
 }
 

@@ -246,13 +246,13 @@ class TeacherViewNewsFeed extends Component {
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
               </Nav> 
-              <Form inline style={{marginRight:'7%' , marginLeft:'7%' , textAlign:'center'}}>
+              {/* <Form inline style={{marginRight:'7%' , marginLeft:'7%' , textAlign:'center'}}>
                 <FormControl style={{ width:'400px' , height:'8%' , fontSize:'10px' }}  type="text" placeholder="Search" className="mr-sm-2" />
-                {/* <Button text="Search" /> */}
+                 <Button text="Search" /> 
               </Form>
               <Nav.Link> 
                    <img onClick={this.onOpenModal} data-toggle="modal" data-target="#exampleModal"  style={{width:'20px' , height:'20px' , float:'right'}} src={require('../../../images/filter.png')}  />
-              </Nav.Link>
+              </Nav.Link> */}
             </Navbar.Collapse>
           </Navbar>
 

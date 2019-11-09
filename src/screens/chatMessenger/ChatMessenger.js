@@ -24,14 +24,26 @@ class ChatMessenger extends Component {
         deleteID : null ,
         myname : '' ,
         myemail : '' ,
-        myid : '' ,
+        myid : '',
         myimage : ''
          
     }
   }
 
   componentDidMount(){
+   this.validation()
    this.addData();
+  }
+
+  validation(){
+    var data = this.props.accounttype;
+   if(data=='Student' || data =='Teacher' || data=="Organization" || data=="Admin" ){
+   
+   }else{
+    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+    this.props.history.index=0;
+    this.props.history.push('/')
+   }
   }
 
   addData(){
@@ -101,7 +113,7 @@ class ChatMessenger extends Component {
   }
 
   feedmore(){
-    const { myChatList , deleteID , myemail , myname , myid , myimage} = this.state;
+    const { myChatList , deleteID , myemail , myname , myid , myimage , otherid} = this.state;
      var chatdata = this.props.cinfo;
 
     if(chatdata.name == undefined || chatdata.name==null || chatdata.name=='undefined')
@@ -135,13 +147,13 @@ class ChatMessenger extends Component {
 
       var pNode1 = chatdata.id + myid;
       var pNode2 =  myid + chatdata.id;
-      this.setState({pushNode1:pNode1 , pushNode2:pNode2 , userObj:obj , deleteID:chatdata.id })
+      this.setState({pushNode1:pNode1 , pushNode2:pNode2 , userObj:obj , deleteID:chatdata.id  })
 
       }
   }
 
     setDetail(ind){
-      const {myChatList , myMessage , myid} = this.state;
+      const {myChatList , myMessage , myid , myemail , myname , myimage} = this.state;
       var id = myChatList[ind].id;
 
       console.log('myid'+myid , 'other id'+id)
@@ -151,17 +163,33 @@ class ChatMessenger extends Component {
         // this.setState({myMessage});
        }
 
-      this.showmessage(id);
-
-      var pNode1 = id + myid;
-      var pNode2 =  myid + id;
-
-      var obj = {
+       var obj = {
         name : myChatList[ind].Name ,
         id: myChatList[ind].id,
         email : myChatList[ind].Email ,
         image : myChatList[ind].logo 
       }
+
+       var skey =  firebase.database().ref(`chatList/`).child(`${myid}/${id}`);
+       skey.set(obj)
+       var fkey =  firebase.database().ref(`chatList/${id}/${myid}`);
+       
+       var myobj = {
+         email : myemail ,
+         id  : myid,
+         image : myimage,
+         name: myname
+       }
+       fkey.set(myobj)
+
+
+
+      this.showmessage(id);
+
+      var pNode1 = id + myid;
+      var pNode2 =  myid + id;
+
+      
 
       this.setState({pushNode1:pNode1 , pushNode2:pNode2 , userObj:obj , deleteID:id})
     }
@@ -196,6 +224,8 @@ class ChatMessenger extends Component {
                 skey.set(msgObj);
                 dkey.set(msgObj);                
       }
+
+      document.getElementById('msg').value="";
   }
   
   showChatlist(){
@@ -231,6 +261,29 @@ showmessage(fid){
     myMessage.push(obj)
     this.setState({ myMessage })     
  })
+}
+
+deleteChat(){
+const {myid , deleteID } =this.state;  
+ Swal.fire({
+  title: 'Are you sure?',
+  text: "You won't be able to revert this!",
+  type: 'warning',
+  showCancelButton: true,
+  confirmButtonColor: '#d33',
+  cancelButtonColor: '#3085d6',
+  confirmButtonText: 'Yes, delete it!'
+}).then((result) => {
+  if (result.value) {
+    firebase.database().ref(`chating/${myid}/${myid+deleteID}`).set({})
+    firebase.database().ref(`chatList/${myid}/${deleteID}`).set({})
+    Swal.fire('Done' , 'Chat Deleted Successfully');
+    window.history.back()
+  }
+ })
+
+
+
 }
 
 
@@ -274,7 +327,7 @@ showmessage(fid){
               <div className="col-xl form-control border border-success rounded" id="chatdivCM" > 
                 <div className="col-lg">
                     <h6 className="text-center"> Chat Messenger </h6>
-                    <p id="btn1CM"><button className="BtnCM"  > Delete Chat </button> </p> 
+                    <p  id="btn1CM"><button onClick={()=>this.deleteChat()} className="BtnCM"  > Delete Chat </button> </p> 
                     <p> 
                     TO : {  userObj.name } <br/>
                     From : { myname }
@@ -282,7 +335,7 @@ showmessage(fid){
                     <hr/>
                     <div id="chat"  className="cdiv scrollbar square scrollbar-lady-lips thin">
                     {
-                   myMessage.length>1 &&  myMessage.map((val , ind)=>{
+                   myMessage.length>0 &&  myMessage.map((val , ind)=>{
                       return(
                     <div>    
                      { val.id == myid && <div className="alert alert-success" style={{fontSize:'12px' , width:'50%' , marginLeft:'50%'}} > {val.message}   </div>  }
