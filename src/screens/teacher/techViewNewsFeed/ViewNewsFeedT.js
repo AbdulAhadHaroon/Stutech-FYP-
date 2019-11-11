@@ -79,7 +79,8 @@ class TeacherViewNewsFeed extends Component {
            type : d.jobType ,
            cid : d.cid ,
            category : d.category ,
-           subject : d.subject
+           subject : d.subject ,
+           from : d.from
           }
           JobsNF.push(obj);
           allNF.push(obj)
@@ -115,7 +116,8 @@ class TeacherViewNewsFeed extends Component {
             type : val.type ,
             cid : val.cid ,
             category : val.category ,
-            subject : val.subject
+            subject : val.subject ,
+            from : val.from
            }
            JobsNF.push(obj)
            this.setState({JobsNF})
@@ -140,7 +142,8 @@ class TeacherViewNewsFeed extends Component {
               type : JobsNF[i].type ,
               cid : JobsNF[i].cid ,
               category : JobsNF[i].category ,
-              subject : JobsNF[i].subject
+              subject : JobsNF[i].subject ,
+              from : JobsNF[i].from
       }
    
     skey.set(obj);
@@ -305,17 +308,17 @@ class TeacherViewNewsFeed extends Component {
                                       &nbsp; &nbsp; */}
                                        <hr/>
 
-                                      <figure style={{display:'inline-block'}} onClick={(i)=>this.viewProf(index)}>
-                                          <img  style={{width:'20px' , height:'20px'}} src={require('../../../images/user.jpg')}/> 
-                                          <figcaption  style={{fontSize:'10px'}}><b> Profile</b></figcaption>
+                                       &nbsp; &nbsp;
+                                      <figure style={{display:'inline-block'}} onClick={(e)=>this.addFav(index)}>
+                                      <img src={require('../../../images/fav.png')}  style={{width:'25px' , height:'25px'}}/>
+                                      <figcaption style={{fontSize:'10px'}}><b>Favourite</b></figcaption>
                                       </figure>
 
                                       &nbsp; &nbsp;
-                                      <figure style={{display:'inline-block'}}onClick={(i)=>this.addFav(index)}>
-                                      <img src={require('../../../images/fav.png')}  style={{width:'20px' , height:'20px'}}/>
-                                      <figcaption  style={{fontSize:'10px'}}><b>Favourite</b></figcaption>
-                                      </figure>
-
+                                      {(val.from == 'Organization' || val.from == undefined)  && <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
+                                        <img  style={{width:'25px' , height:'25px'}} src={require('../../../images/user.jpg')}/> 
+                                        <figcaption style={{fontSize:'10px'}}><b> Profile</b></figcaption>
+                                      </figure> }
                                       {/* &nbsp; &nbsp;
                                       <figure style={{display:'inline-block'}}>
                                       <img src={require('../../../images/download.png')}  style={{width:'20px' , height:'20px'}}/>

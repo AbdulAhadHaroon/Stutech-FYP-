@@ -23,6 +23,10 @@ class StudentViewNewsFeed extends Component {
         progress:true,
         JobsNF:[] , 
         allNF:[] ,
+        rname : '' ,
+        rsubject : '' ,
+        rdate : '' ,
+        rtime : '' ,
         open: false,
     }
   }
@@ -35,7 +39,7 @@ class StudentViewNewsFeed extends Component {
 
  validation(){
    var data = this.props.accounttype;
-  if(data.includes('Student')){
+  if(data.includes('Student') || data.includes('Admin')){
    this.props.history.index=0;
   }else{
    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
@@ -43,13 +47,13 @@ class StudentViewNewsFeed extends Component {
   }
  }
 
-  onOpenModal = () => {
-    this.setState({ open: true });
-  };
+  // onOpenModal = () => {
+  //   this.setState({ open: true });
+  // };
  
-  onCloseModal = () => {
-    this.setState({ open: false });
-  };
+  // onCloseModal = () => {
+  //   this.setState({ open: false });
+  // };
 
   addData(){
     const {JobsNF , progress , allNF} = this.state;
@@ -125,6 +129,59 @@ showCategdata(val1){
 
 }
 
+onOpenModal(val) {
+  const {rsubject , rname} = this.state;
+  this.setState({ open: true  , rsubject:val.subject || '' , rname:val.orgName || ''});
+};
+
+onCloseModal = () => {
+  this.setState({ open: false });
+};
+
+setReminder(){
+  this.setState({open:true})   
+  const {rname , rsubject , rdate , rtime , open} = this.state;
+  var data = this.props.details;
+
+  // var name = rname;
+  // var subject = rsubject;
+  // var date = rdate;
+  // var time = rtime;
+
+
+  if(rname.length<2){
+      Swal.fire('Oops' , 'Please Write Name Correctly' , 'error')
+  }else if (rsubject.length<2){
+      Swal.fire('Oops' , 'Please Write Subject Correctly' , 'error')
+  }
+  else if(rdate.length<10 || rdate.length>10){
+      Swal.fire('Oops' , 'Please Write date (DD-MM-YYYY) in this Format' , 'error')
+  }else if(rtime.length<8 || rtime.length>8){
+      Swal.fire('Oops' , 'Please Write time in 24 Hours (HH-MM-SS) in this Format' , 'error')
+  }
+  else {
+      var skey = firebase.database().ref(`reminder/${data.id}`).push();
+       var obj = {
+          id : skey.key ,
+          name : rname ,
+          subject : rsubject ,
+          date : rdate ,
+          time : rtime 
+       }
+       skey.set(obj);
+
+       var xhr = new XMLHttpRequest()
+        xhr.addEventListener('load', () => {
+            console.log(xhr.responseText)
+              })
+       xhr.open('GET', `http://smartsms.pk/json?api_token=a3bec66f70ebfc9ec4d1ecbcfbdaa90bcb2d949b95503dfca0da4dd77791&api_secret=zubair123&to=${data.number}&from=Brand&date=${rdate}&time=${rtime}&message=You+set+a+reminder+for+${rsubject}+on+this+Date+${rdate}`)
+       xhr.send()
+
+       Swal.fire('Done' , 'Reminder Set Successfully')
+      this.setState({open:false , rdate:'' , rtime:''  , rname:'' , rsubject:''})
+  }
+ } 
+
   
 addFav(i){
     const {JobsNF} = this.state;
@@ -159,61 +216,28 @@ addFav(i){
   render(){
 
   
-    const {nfdiv1 , nfdiv2 , nfdiv3 , nfdiv4 , nfdiv5 , JobsNF , open , progress} = this.state;
+    const {nfdiv1 , nfdiv2 , nfdiv3 , nfdiv4 , nfdiv5 , JobsNF , open , progress , rname , rdate , rtime , rsubject} = this.state;
       return(
        <div >
 
-        <Modal open={open} onClose={this.onCloseModal} center>
+     <Modal open={open} onClose={this.onCloseModal} center>
           <div  style={{borderRadius:'10px' , padding:'20px'}}>
-          <h6 style={{color:'rgb(20, 194, 224)' , textAlign:'center'}} > <b> Filters </b> </h6>
+          <h6 style={{color:'rgb(20, 194, 224)' , textAlign:'center'}} > <b> SET YOUR REMINDER </b> </h6>
           <hr/>
-          <div className="form-group mx-1">
-              <label  style={{fontSize:'12px' , textAlign:'left' , display:'block'}} ><b style={{color:'rgb(20, 194, 224)'}}>Type</b></label>
-              <select style={{fontSize:'12px'}} className="form-control" onChange={this.selectedAccountType} >
-              <option style={{fontSize:'12px'}}  value="student">ALL</option>
-              <option style={{fontSize:'12px'}}  value="student">Job</option>
-              <option style={{fontSize:'12px'}} value="teacher">Internship</option>
-              <option style={{fontSize:'12px'}} value="teacher">Seminar</option>
-              <option style={{fontSize:'12px'}} value="teacher">Scholarship</option>
-              <option style={{fontSize:'12px'}} value="teacher">Other</option>
-              </select>
-            </div> 
 
-           <div className="form-group mx-1">
-                <label  style={{fontSize:'12px' , textAlign:'left' , display:'block'}} ><b style={{color:'rgb(20, 194, 224)'}}>Work Experienced</b></label>
-                <select style={{fontSize:'12px'}} className="form-control" onChange={this.selectedAccountType} >
-                <option style={{fontSize:'12px'}}  value="student">ALL</option>
-                <option value="student">Beginner</option>
-                <option value="teacher">Intermediate</option>
-                </select>
-            </div> 
-                  
-            <div className="form-group mx-1">
-                <label  style={{fontSize:'12px' , textAlign:'left' , display:'block'}} ><b style={{color:'rgb(20, 194, 224)'}}>Category</b></label>
-                <select style={{fontSize:'12px'}} className="form-control" onChange={this.selectedAccountType} >
-                <option style={{fontSize:'12px'}}  value="student">ALL</option>
-                <option value="student">Web , Mobile and Software developer</option>
-                <option value="teacher">Ecommerce Development</option>
-                <option value="teacher">Game Development</option>
-                <option value="teacher">Android App Development</option>
-                <option value="teacher">QA and Testing</option>
-                <option value="teacher">Database</option>
-                <option value="teacher">Web Development</option>
-                <option value="teacher">Web Designing</option>
-                <option value="teacher">IOS Development</option>
-                <option value="teacher">All IT and Networking</option>
-                <option value="teacher">Other Development</option>
-                </select>
-            </div>
+          <p> Name :  <input className="form-control" value={rname} onChange={(e)=>this.setState({rname : e.target.value}) }  /> </p> 
+          <p> Subject : <input className="form-control" value={rsubject} onChange={(e)=>this.setState({rsubject : e.target.value}) }  /> </p>
+          <p> Date : <input className="form-control"   placeholder="Write date (DD-MM-YYYY)" value={rdate} onChange={(e)=>this.setState({rdate : e.target.value}) } /> </p>
+          <p> Time :  <input className="form-control"   placeholder="Time in 24 Hours (HH-MM-SS)" value={rtime} onChange={(e)=>this.setState({rtime : e.target.value}) } />  </p>  
 
             <div className="row">
-            <Button style={{margin:'2px auto'}} type="submit" text="Apply" />
-            &nbsp;
-            <Button  style={{margin:'2px auto'}} type="submit" text="Clear All" />
+              <Button style={{margin:'2px auto'}} onClick={()=>{this.setReminder()}} type="submit" text="Set Reminder" />
             </div>
 
           </div>
         </Modal>
+
+        
 
           <Navbar  expand="lg"  style={{height:'auto' , width:'100%' ,  marginLeft:'0px' , background:'rgb(20, 194, 224)'}}>
             <Navbar.Brand>
@@ -278,7 +302,7 @@ addFav(i){
                                 </p>
                                   <div style={{textAlign:'center'}}>                                        
                                       <hr/>
-                                      <figure style={{display:'inline-block'}}>
+                                      <figure style={{display:'inline-block'}} onClick={(e)=>this.onOpenModal(val)}>
                                       <img style={{width:'20px' , height:'20px'}} src={require('../../../images/rem.jpg')} />
                                       <figcaption  style={{fontSize:'10px'}}><b> Reminder </b> </figcaption>
                                       </figure>

@@ -110,6 +110,8 @@ class orgAfterLogin extends Component {
 
       sendMessage(){
         var data = this.props.details;
+        var d = new Date();
+        var m =  d.getDate() + '-' +d.getMonth() + '-' + d.getFullYear()
 
         var sub = document.getElementById('subject').value;
         var des = document.getElementById('des').value;
@@ -126,10 +128,11 @@ class orgAfterLogin extends Component {
           id:data.id ,
           subject : sub ,
           description : des ,
-          from : 'organization' , 
-          name : data.name
-        }
+          name : data.name ,
+          email : data.email ,
+          date : m ,
 
+        }
 
         firebase.database().ref("Messages/"+data.id).push().set(obj);
         Swal.fire('Done' , 'Message Sent Succesfully')

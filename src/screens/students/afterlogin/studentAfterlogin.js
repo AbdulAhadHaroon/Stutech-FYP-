@@ -186,7 +186,7 @@ class studentAfterLogin extends Component {
           xhr.addEventListener('load', () => {
               console.log(xhr.responseText)
                 })
-         xhr.open('GET', `https://smartsms.pk/json?api_token= 6ee650fde65d4b1a8136875e0190358ecb634db168688b66305b2d88ffda&api_secret=shahjahan123&to=${data.number}&from=Brand&date=${rdate}&time=${rtime}&message=You+set+a+reminder+for+${rsubject}+on+this+Date+${rdate}`)
+         xhr.open('GET', `http://smartsms.pk/json?api_token=a3bec66f70ebfc9ec4d1ecbcfbdaa90bcb2d949b95503dfca0da4dd77791&api_secret=zubair123&to=${data.number}&from=Brand&date=${rdate}&time=${rtime}&message=You+set+a+reminder+for+${rsubject}+on+this+Date+${rdate}`)
          xhr.send()
 
          Swal.fire('Done' , 'Reminder Set Successfully')

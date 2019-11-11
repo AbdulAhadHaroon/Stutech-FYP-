@@ -4,6 +4,7 @@ import './adminMessage.css';
 import { Button } from '../../../components/button/button.js'
 import { Navbar, Nav, NavDropdown, Form, FormControl } from 'react-bootstrap';
 import firebase from '../../../config/firebase.js'
+import { connect } from 'react-redux';
 import $ from "jquery";
 import axios from 'axios'
 import Swal from 'sweetalert2'
@@ -113,13 +114,12 @@ class AdmMsg extends Component {
 // }
 
   handleUpload(e) {
-    console.log('done')
     const { from , to , subject, message } = this.state;
     e.preventDefault();
-    axios.post('http://localhost:5000/send', {
+    axios.post('https://stutech2019.herokuapp.com/send', {
       from , to , subject , message
     }).then((res) => {
-      console.log(res.statusText);
+     Swal.fire('Done' , 'Email has been Sent')
     });
   }
   // handleUpload(e) {
@@ -166,9 +166,9 @@ class AdmMsg extends Component {
 
         <div style={{ backgroundColor: 'rgb(233, 233, 233)', margin: '0px 0px 10px 0px' }}>
           <div className="row navbarAM"  >
-            <p className="navitemAM" onClick={() => { this.setState({ nfdiv1: true, nfdiv2: false, nfdiv3: false, nfdiv4: false }) }} >VIEW_MESSAGE</p>
+            <p className="navitemAM" onClick={() => { this.setState({ nfdiv1: true, nfdiv2: false, nfdiv3: false, nfdiv4: false }) }} >SEND_NOTIFICATION</p>
             <p className="navitemAM" onClick={() => { this.setState({ nfdiv1: false, nfdiv2: true, nfdiv3: false, nfdiv4: false }) }}>SEND_EMAIL</p>
-            <p className="navitemAM" onClick={() => { this.setState({ nfdiv1: false, nfdiv2: false, nfdiv3: true, nfdiv4: false }) }}>SEND_NOTIFICATION</p>
+            {/* <p className="navitemAM" onClick={() => { this.setState({ nfdiv1: false, nfdiv2: false, nfdiv3: true, nfdiv4: false }) }}>SEND_NOTIFICATION</p> */}
           </div>
         </div>
 
@@ -206,10 +206,10 @@ class AdmMsg extends Component {
           <div className="col-8" style={{ margin: '20px auto' }}>
             <h4 className="text-center" style={{ color: 'rgb(20, 194, 224)' }}> <b> Send Email</b> </h4>
             <p className="text-center" > <b> Applying Filters </b> </p>
-            <p style={{ textAlign: 'right' }}> <button style={{ width: '200px' }} onClick={() => this.emailType()} className="btn btn-success" > Specific Email </button> </p>
-            <hr />
+            {/* <p style={{ textAlign: 'right' }}> <button style={{ width: '200px' }} onClick={() => this.emailType()} className="btn btn-success" > Specific Email </button> </p>
+            <hr /> */}
 
-            <div id='aemail'>
+            {/* <div id='aemail'>
               <div className="form-group mx-1" id="select2">
                 <label style={{ fontSize: '12px' }} >Select</label>
                 <select style={{ fontSize: '12px' }} className="form-control" onChange={this.selected2} >
@@ -217,7 +217,7 @@ class AdmMsg extends Component {
                   <option style={{ fontSize: '12px' }} value="teacher">Teacher</option>
                   <option style={{ fontSize: '12px' }} value="student">Students</option>
                 </select>
-              </div>
+              </div> */}
 
               {/* <div className="form-group mx-1" id="select3" style={{ display: 'none' }}>
                 <label style={{ fontSize: '12px' }} >Department</label>
@@ -240,7 +240,7 @@ class AdmMsg extends Component {
                 </select>
               </div> */}
 
-              <div className="form-group mx-1" id="select5" style={{ display: 'none' }}>
+              {/* <div className="form-group mx-1" id="select5" style={{ display: 'none' }}>
                 <label style={{ fontSize: '12px' }} >Section</label>
                 <select style={{ fontSize: '12px' }} className="form-control" onChange={this.selected5} >
                   <option style={{ fontSize: '12px' }} value="student">ALL</option>
@@ -261,12 +261,12 @@ class AdmMsg extends Component {
                 <br />
                 <textarea style={{ fontSize: '12px' }} type="text" className="form-control" placeholder="Message" />
                 <Button text='send' type='Send' />
-              </div> */}
+              </div> 
 
-            </div>
+            </div> */}
 
-            <div id='semail' style={{ border: 'solid 1px black', margin: '10px', padding: '10px', display: 'none' }}>
-              <p className="text-center"> <b>  Send Specific Email </b> </p>
+             <div id='semail' style={{ border: 'solid 1px black', margin: '10px', padding: '10px' }}>
+              <p className="text-center"> <b>  Send Email </b> </p>
               <hr />
               <form onSubmit={(e) => this.handleUpload(e)} >
                 <p>
@@ -289,7 +289,7 @@ class AdmMsg extends Component {
 
           
               {/* {{msg}} */}
-              <div id="aemail"  style={{ border: 'solid 1px black', margin: '10px', padding: '10px' }}>
+              {/* <div id="aemail"  style={{ border: 'solid 1px black', margin: '10px', padding: '10px' }}>
               <form onSubmit={(e) => this.handleUpload(e)} >
                 {/* <p>
                   <label>From</label>
@@ -298,7 +298,7 @@ class AdmMsg extends Component {
                 <p>
                   <label>To</label>
                   <input style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" onChange={(e)=>this.setState({ to : e.target.value})} />
-                </p> */}
+                </p> 
                 <p>
                   <label>Subject</label>
                   <input  style={{ height: '30px', fontSize: '12px' }} type="text" className="form-control" onChange={(e)=>this.setState({ subject : e.target.value})} />
@@ -311,7 +311,7 @@ class AdmMsg extends Component {
                   <input style={{ height: '30px', fontSize: '12px' }} type="Submit" className="btn btn-success" value="submit" />
                 </p>
               </form>
-              </div>
+              </div> */}
 
           </div>
         }
@@ -394,4 +394,15 @@ class AdmMsg extends Component {
   }
 }
 
-export default AdmMsg;
+function mapStateToProp(state) {
+  return ({
+    details: state.root.adminInfo ,
+    accounttype : state.root.accountType
+  })
+}
+function mapDispatchToProp(dispatch) {
+  return ({
+  })
+}
+
+export default connect(mapStateToProp, mapDispatchToProp)(AdmMsg);

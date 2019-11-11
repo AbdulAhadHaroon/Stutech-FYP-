@@ -201,6 +201,25 @@ class Login extends Component {
              this.props.history.push("/orgAfterLogin");
 
          }
+
+         else if(accType=='Admin'){
+          
+          var AdmObj = {
+            id : data.id,
+            name : data.name ,
+            email : data.email,
+            number : data.ph_no ,
+            pass : data.pass ,
+            accountType : 'Admin' ,
+           }
+
+           this.setState({progress:false})
+           this.props. adminInfo(AdmObj);
+           this.props.history.push("/adminAfterLogin");
+
+       }
+
+
       } else if (data.accountStatus=='Block')
       {
         this.setState({progress:false})
@@ -290,7 +309,7 @@ class Login extends Component {
                   <div align="center"><Link to="/techAfterLogin">  <Button text='Tech Login'  type='submit' onClick={() =>Swal.fire('Congratulations!','You Logged in Sucessfully !')}/> </Link> </div>
                   <div align="center"><Link to="/adminAfterLogin">  <Button text='Adm Login'  type='submit' onClick={() =>Swal.fire('Congratulations!','You Logged in Sucessfully !')}/> </Link> </div>
                   <div align="center"><Link to="/orgAfterLogin">  <Button text='Org Login'  type='submit' onClick={() =>Swal.fire('Congratulations!','You Logged in Sucessfully !')}/> </Link> </div>
-                        <br /> */}
+                        <br />  */}
                         <br/>
                   <div align="center">Don't have an account ? <a> <Link to="/signup1"> Create Accout </Link></a> </div>
                   <div align="center"> <a style={{color:'rgb(47, 143, 233)'}} onClick={()=>this.onOpenModal()}>  Forget Password </a> </div>

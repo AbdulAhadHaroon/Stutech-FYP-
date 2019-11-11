@@ -37,7 +37,7 @@ componentDidMount(){
 
 validation(){
   var data = this.props.accounttype;
- if(data.includes('Student')){
+ if(data.includes('Student') || data.includes('Admin')){
 
  }else{
   Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');

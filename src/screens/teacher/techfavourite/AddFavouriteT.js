@@ -56,7 +56,8 @@ if(data.includes('Teacher')){
             type : d.type ,
             cid : d.cid ,
             category : d.category ,
-            subject : d.subject
+            subject : d.subject ,
+            from : d.from
             }
             myFav.push(obj);
             this.setState({myFav , progress:false})
@@ -137,17 +138,18 @@ viewProf(i){
                                       <div style={{margin:'10px auto'}}>   
                                         <p style={{fontSize:'13px'}}> 
                                             <b> Last Date : </b> {val.date} <br/> 
-                                            <b> Category : </b> {val.websiteLink} <br/>
+                                            <b> Category : </b> {val.category} <br/>
                                             <b> Event Type : </b> {val.type} <br/>
-                                            <b> Work Experienced : </b> {val.category}   
+                                            <b> Work Experienced : </b> {val.experience}   
                                         </p>
                                             
                                         <div style={{textAlign:'center'}}>                                        
                                             <hr/>
-                                            <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
-                                            <img src={require('../../../images/profile.png')}  style={{width:'23px' , height:'23px'}}/>
-                                            <figcaption style={{fontSize:'10px'}} ><b>Profile</b></figcaption>
-                                            </figure>
+                                            &nbsp; &nbsp;
+                                            {(val.from == 'Organization' || val.from == undefined)  && <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
+                                              <img  style={{width:'25px' , height:'25px'}} src={require('../../../images/user.jpg')}/> 
+                                              <figcaption style={{fontSize:'10px'}}><b> Profile</b></figcaption>
+                                            </figure> }
                                              &nbsp; &nbsp;
 
                                             <figure style={{display:'inline-block'}} onClick={(e)=>this.deleteFav(index)}>

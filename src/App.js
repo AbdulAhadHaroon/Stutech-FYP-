@@ -51,6 +51,7 @@ import AdminDashboard from './screens/admin/AdminAfterLogin/AdminAfterLogin.js'
 import AdminProfile from './screens/admin/AdminProfile/AdmProfile.js'
 import AdminMessage from './screens/admin/AdminMessage/adminMessage.js'
 import AdminGraph from './screens/admin/AdminGraph/adminGraph.js'
+import AdminComplain from './screens/admin/AdminComplain/AdminComplain.js'
 
 import {BrowserRouter as Router , Switch , Route , Redirect} from 'react-router-dom'; 
 
@@ -59,7 +60,25 @@ import N404 from './screens/N404.js';
 
 function initialAnalytics(){
   ReactGA.initialize('UA-151953691-1');
-  ReactGA.pageview('/HomePage')
+  ReactGA.pageview('/')
+  ReactGA.pageview('/HomePage');
+  ReactGA.pageview('/stuAfterLogin');
+  ReactGA.pageview('/stuNewsFeed');
+  ReactGA.pageview('/chatMe')
+  ReactGA.pageview('/stuProfile')
+  ReactGA.pageview('/stuSendComplain')
+  ReactGA.pageview('/stuFavourite')
+  ReactGA.pageview('/stuDynamicProfile')
+  ReactGA.pageview('/studentAchievements')
+  ReactGA.pageview('/orgAfterLogin')
+  ReactGA.pageview('/orgAddJob')
+  ReactGA.pageview('/orgViewAchievements')
+  ReactGA.pageview('/techAddJob')
+  ReactGA.pageview('/techAfterLogin')
+  ReactGA.pageview('/techViewNewsFeed')
+  ReactGA.pageview('/adminAfterLogin')
+  ReactGA.pageview('/adminGraph')
+  ReactGA.pageview('/adminProfile')
 }
 
 class App extends Component {
@@ -114,6 +133,7 @@ class App extends Component {
           <Route exact path="/adminProfile" component={AdminProfile}/>
           <Route exact path="/adminMessage" component={AdminMessage}/>
           <Route exact path="/adminGraph" component={AdminGraph}/>
+          <Route exact path="/adminComplain" component={AdminComplain}/>
           
           <Route exact path="/404" component={N4}/>
           <Redirect to="/404" />

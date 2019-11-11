@@ -95,7 +95,8 @@ class TeacherAfterLogin extends Component {
          type : d.jobType ,
          cid : d.cid ,
          category : d.category ,
-         subject : d.subject
+         subject : d.subject ,
+         from : d.from
         }
         JobsNF.push(obj);
         this.setState({JobsNF , progress:false})
@@ -136,7 +137,8 @@ class TeacherAfterLogin extends Component {
             type : JobsNF[i].type ,
             cid : JobsNF[i].cid ,
             category : JobsNF[i].category ,
-            subject : JobsNF[i].subject
+            subject : JobsNF[i].subject ,
+            from : JobsNF[i].from 
     }
  
   skey.set(obj);
@@ -191,7 +193,7 @@ class TeacherAfterLogin extends Component {
                         myjobs.map((val , ind)=>{
                         return(
                            <div className="RemindDivTAF">
-                              <p style={{textAlign:'center' , fontSize:'12px'}}> <img style={{width:'100px' , height:'70px'}} src={val.logo}/> </p>
+                              <p style={{textAlign:'center' , fontSize:'12px'}}> <img style={{width:'100px' , height:'70px'}} src={val.Jimg}/> </p>
                               <hr/>
                               <p  style={{color:'gray' , fontSize:'11px'}}>   Subject : {val.subject} <br/> Category : {val.category} <br/> Experience : {val.experience} <br/>  Date : <b style={{color:'black'}}>{val.date} </b> </p>          
                            </div>
@@ -342,10 +344,10 @@ class TeacherAfterLogin extends Component {
                             </figure> */}
 
                             &nbsp; &nbsp;
-                            <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
-                                <img  style={{width:'25px' , height:'25px'}} src={require('../../../images/user.jpg')}/> 
-                                <figcaption style={{fontSize:'10px'}}><b> Profile</b></figcaption>
-                            </figure>
+                            {(val.from == 'Organization' || val.from == undefined)  && <figure style={{display:'inline-block'}} onClick={(e)=>this.viewProf(index)}>
+                            <img  style={{width:'25px' , height:'25px'}} src={require('../../../images/user.jpg')}/> 
+                            <figcaption style={{fontSize:'10px'}}><b> Profile</b></figcaption>
+                           </figure> }
 
                             &nbsp; &nbsp;
                             <figure style={{display:'inline-block'}} onClick={(e)=>this.addFav(index)}>

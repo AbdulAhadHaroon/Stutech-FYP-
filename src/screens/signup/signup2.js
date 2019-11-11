@@ -386,14 +386,9 @@ class Signup2 extends Component {
                                   <input style={{fontSize:'12px' , height:'30px'}} type="number" className="form-control" id="batch"  placeholder="Batch"/>
                                 </div>
                             </div>
-                            </div>
-                          
-        
+                            </div>        
                         </div>
 
-                        
-        
-        
                         <div className="mx-1" id="teacherForm" style={{display:'none'}}> 
         
                             <div className="form-row align-items-center" >

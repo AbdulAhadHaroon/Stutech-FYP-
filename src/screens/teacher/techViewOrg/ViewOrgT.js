@@ -59,7 +59,8 @@ class TechViewOrg extends Component {
               logo : data.imgURL ,
               type : data.orgType ,
               number : data.ph_no ,
-              websiteLink : data.webLink
+              websiteLink : data.webLink,
+              detail : data.detail || 'No Details Found'
              }
              myOrganization.push(orgObj)
              this.setState({myOrganization , progress:false})
@@ -160,7 +161,7 @@ class TechViewOrg extends Component {
                   {/* <Form inline style={{marginRight:'10%' , marginLeft:'10%' , textAlign:'center'}}>
                     <FormControl style={{ width:'400px' , height:'8%' , fontSize:'10px' }}  type="text" placeholder="Search" className="mr-sm-2" />
                   </Form> */}
-                  <img onClick={this.onOpenModal} data-toggle="modal" data-target="#exampleModal"  style={{width:'20px' , height:'20px' , float:'right'}} src={require('../../../images/filter.png')}  />
+                  {/* <img onClick={this.onOpenModal} data-toggle="modal" data-target="#exampleModal"  style={{width:'20px' , height:'20px' , float:'right'}} src={require('../../../images/filter.png')}  /> */}
                 </Navbar.Collapse>
           </Navbar>
 

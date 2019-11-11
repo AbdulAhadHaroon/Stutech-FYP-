@@ -5,7 +5,9 @@ import {Link} from 'react-router-dom';
 import Swal from 'sweetalert2'
 import { Navbar} from 'react-bootstrap';
 import firebase from '../../../config/firebase.js'
-class StuReminder extends Component {
+import { connect } from 'react-redux';
+
+class studentViewNotification extends Component {
   
   constructor() {
     super();
@@ -16,8 +18,20 @@ class StuReminder extends Component {
   }
 
   componentDidMount(){
+    this.validation()
       this.addData()
   }
+
+  validation(){
+    var data = this.props.accounttype;
+   if(data.includes('Student')){
+    this.props.history.index=0;
+   }else{
+    Swal.fire('Some thing Went Wrong' , 'You need to login again to continue' , 'error');
+    this.props.history.push("/");
+   }
+  }
+ 
 
   addData(){
       const{myNotifications}=this.state;
@@ -81,4 +95,17 @@ class StuReminder extends Component {
 
 }
 
-export default StuReminder;
+function mapStateToProp(state) {
+    return ({
+      details: state.root.studentInfo ,
+      accounttype : state.root.accountType
+    })
+  }
+  function mapDispatchToProp(dispatch) {
+    return ({
+        //  getUserinfo : (info)=>{ dispatch(SignupDetail(info))}
+    })
+  }
+  
+  export default connect(mapStateToProp, mapDispatchToProp)(studentViewNotification);
+  
